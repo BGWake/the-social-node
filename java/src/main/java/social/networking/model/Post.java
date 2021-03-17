@@ -1,4 +1,4 @@
-package kata.model;
+package social.networking.model;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -53,16 +53,20 @@ public class Post {
         return time;
     }
 
+    public void setTime(LocalDateTime time) {
+        this.time = time.toString();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Post post = (Post) o;
-        return Objects.equals(username, post.username) && Objects.equals(content, post.content) && Objects.equals(time, post.time);
+        return username.equals(post.username) && content.equals(post.content);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(username, content, time);
+        return Objects.hash(username, content);
     }
 }

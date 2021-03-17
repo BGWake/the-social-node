@@ -1,8 +1,9 @@
-package kata.controller;
+package social.networking.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import kata.model.Post;
-import kata.repository.PostRepository;
+import social.networking.model.Post;
+import social.networking.repository.PostRepository;
+import social.networking.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -10,6 +11,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.mockito.Mockito.verify;
@@ -22,19 +24,23 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(SocialNetworkingController.class)
 class SocialNetworkingControllerTest {
 
+    LocalDateTime localDateTime = LocalDateTime.now();
     @Autowired
     private MockMvc mockMvc;
-
     @MockBean
     private PostRepository postRepository;
+    @MockBean
+    private UserRepository userRepository;
 
     @Test
     void get_all_posts_is_successful() throws Exception {
         Post post = new Post("Bob", "Had a good day!");
 
+        post.setTime(localDateTime);
+
         when(postRepository.findAll()).thenReturn(List.of(post));
 
-        mockMvc.perform(get("/allPosts")
+        mockMvc.perform(get("/post/all")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$..username").value(post.getUsername()))
@@ -47,9 +53,11 @@ class SocialNetworkingControllerTest {
     void get_posts_by_username_is_successful() throws Exception {
         Post post = new Post("Steve", "Walked the dog today!");
 
+        post.setTime(localDateTime);
+
         when(postRepository.findPostsByUsername(post.getUsername())).thenReturn(List.of(post));
 
-        mockMvc.perform(get("/posts/Steve")
+        mockMvc.perform(get("/post/Steve")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$..username").value(post.getUsername()))
@@ -61,6 +69,8 @@ class SocialNetworkingControllerTest {
     @Test
     void create_post_is_successful() throws Exception {
         Post post = new Post("Tom", "Had a big lunch!");
+
+        post.setTime(localDateTime);
 
         mockMvc.perform(post("/post/save")
                 .contentType(MediaType.APPLICATION_JSON)

@@ -1,6 +1,6 @@
-package kata.repository;
+package social.networking.repository;
 
-import kata.model.Post;
+import social.networking.model.Post;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

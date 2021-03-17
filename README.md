@@ -1,8 +1,17 @@
-# Social Networking Kata
+# Social Networking
 
 ### Installation Directions
 - Import the build.gradle in your IDE.
 - Define Project JDK as Java 11.
+- Run Application.java
+- Refer to the README.md in the `vue` folder to start the front-end
+- Access other user's feeds using the hamburger button in the top left
 
 ### Description
-Provides back-end functionality for creating and retrieving posts on a social network web application.
+A full-stack web application inspired by Twitter
+
+### Notes
+- Existing users are `bob`, `steve`, and `jim` all with the password `password`
+- Register, login, post, follow, and @ tagging are all existing functions
+- If you wish to view the local database, go to `http://localhost:8080/h2-console`
+  - Default credentials: Username: `sa` with an empty password
