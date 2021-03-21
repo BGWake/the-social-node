@@ -1,8 +1,8 @@
 <template>
   <v-container>
     <h1 class="timeline-header">{{ userFeed }}'s Feed</h1>
-    <span class="timeline-header">
-    <v-btn v-on:click="follow" class="ma-4" type="submit" v-show="$store.state.loggedInUsername != ''"> follow {{ userFeed }} </v-btn>
+    <span class="timeline-header" v-show="$store.state.loggedInUsername != ''">
+    <v-btn v-on:click="follow" class="ma-4" type="submit" v-show="alreadyFollowing == false"> follow {{ userFeed }} </v-btn>
     </span>
 
     <v-card
@@ -37,6 +37,8 @@ export default {
       username: "",
       following: "",
     },
+    currentUser: "",
+    alreadyFollowing: false,
   }),
 
   watch: {
@@ -50,9 +52,30 @@ export default {
   methods: {
 
     renderComponent() {
-      this.userFeed = this.$store.state.storeUsername;
+      
+    this.currentUser = this.$store.state.loggedInUsername;
+    this.userFeed = this.$store.state.storeUsername;
 
-      socialService
+    socialService
+     .getFollowing(this.currentUser)
+     .then((response) => {
+      if (response.status == 200) {
+        var yourFollowing = response.data;
+
+          if (yourFollowing.includes(this.userFeed + ",")) {
+           this.alreadyFollowing = true;
+          }
+          else { this.alreadyFollowing = false }
+
+      } else {
+        console.error(response + " errors")
+      }
+    })
+    .catch((err) => {
+      console.error(err + " errors");
+    });
+
+    socialService
       .getPostsByUsername(this.userFeed)
       .then((requestData) => {
         this.posts = requestData.data;
@@ -70,10 +93,9 @@ export default {
       .follow(this.user)
       .then((response) => {
           if (response.status == 201) {
-            console.log("Response was 201!");
-            //then change button to say following
+            this.alreadyFollowing = true;
           } else {
-            console.log("Response was _NOT_ 201!");
+            console.error(response + " errors");
           }
         })
         .catch((err) => {

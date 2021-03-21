@@ -1,81 +1,39 @@
 package social.networking.controller;
 
 import social.networking.model.User;
-import social.networking.repository.UserRepository;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import social.networking.service.UserService;
 
 import javax.validation.Valid;
-import java.util.List;
 
 @CrossOrigin
 @RestController
 public class AuthenticationController {
 
-    private final UserRepository userRepository;
+    private final UserService userService;
 
-    public AuthenticationController(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public AuthenticationController(UserService userService) {
+        this.userService = userService;
     }
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody User newUser) {
-        List<User> users = userRepository.findAll();
-        System.out.println("New user: " + newUser.toString());
-        for (User user : users) {
-            System.out.println("Registered user: " + newUser.toString());
-            if (user.equals(newUser)) {
-                System.out.println("User Already exists!");
-                return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-        }
-
-        userRepository.save(newUser);
-        return new ResponseEntity<>(null, HttpStatus.CREATED);
+        return userService.register(newUser);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody User user) {
-
-        User loggedInUser = userRepository.findUserByLoggedInIsTrue();
-
-        if (loggedInUser != null) {
-            loggedInUser.setLoggedIn(false);
-            userRepository.save(loggedInUser);
-        }
-
-        List<User> users = userRepository.findAll();
-        for (User other : users) {
-
-            if (other.equals(user)) {
-                other.setLoggedIn(true);
-                userRepository.save(other);
-                return new ResponseEntity<>(null, HttpStatus.CREATED);
-
-            }
-        }
-        return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+    public ResponseEntity<?> logIn(@Valid @RequestBody User user) {
+        return userService.logIn(user);
     }
 
     @PostMapping("/logout")
     public ResponseEntity<?> logOut(@Valid @RequestBody String username) {
-
-        List<User> users = userRepository.findAll();
-        for (User other : users) {
-            if ((other.getUsername() + "=").equals(username)) {
-                other.setLoggedIn(false);
-                userRepository.save(other);
-                return new ResponseEntity<>(null, HttpStatus.CREATED);
-            }
-        }
-        return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        return userService.logOut(username);
     }
 
     @DeleteMapping("/user/all")
     public ResponseEntity<?> deleteUsers() {
-        userRepository.deleteAll();
-        return new ResponseEntity<>(null, HttpStatus.OK);
-
+        return userService.deleteUsers();
     }
 }

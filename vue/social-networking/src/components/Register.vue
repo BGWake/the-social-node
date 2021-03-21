@@ -111,8 +111,8 @@ export default {
   }),
 
   methods: {
+
     register() {
-      console.log("Made it into register method!");
       if (this.user.password != this.user.confirmPassword) {
         this.registrationErrors = true;
         this.registrationErrorMsg = "Password & Confirm Password do not match.";
@@ -121,13 +121,11 @@ export default {
           .register(this.user)
           .then((response) => {
             if (response.status == 201) {
-              console.log("Response was 201!");
               this.$router.push({
                 path: "/login",
                 query: { registration: "success" },
               });
             } else {
-              console.log("Response was _NOT_ 201!");
               this.$router.push("/register");
             }
           })

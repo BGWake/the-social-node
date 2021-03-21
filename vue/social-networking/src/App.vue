@@ -13,7 +13,7 @@
   </v-app>
 </template>
 <script>
-import headerSection from './components/Header';
+import headerSection from './components/HeaderSection';
 
 export default {
   components: { 

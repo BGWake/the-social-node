@@ -4,7 +4,6 @@ import social.networking.model.Post;
 import social.networking.model.User;
 import social.networking.repository.PostRepository;
 import social.networking.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -13,11 +12,13 @@ import java.time.LocalDateTime;
 @Component
 public class Populator implements CommandLineRunner {
 
-    @Autowired
     private UserRepository userRepository;
-
-    @Autowired
     private PostRepository postRepository;
+
+    public Populator(UserRepository userRepository, PostRepository postRepository) {
+        this.userRepository = userRepository;
+        this.postRepository = postRepository;
+    }
 
     @Override
     public void run(String... args) {

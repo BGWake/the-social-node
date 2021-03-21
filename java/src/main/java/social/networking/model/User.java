@@ -22,14 +22,14 @@ public class User {
     private boolean loggedIn;
     private String following;
 
-    public User() {
-    }
-
     public User(String username, String password, String following) {
         this.username = username;
         this.password = password;
         this.loggedIn = false;
         this.following = following;
+    }
+
+    public User() {
     }
 
     public Long getId() {

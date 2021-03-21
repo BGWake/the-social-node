@@ -7,8 +7,6 @@ export default new Vuex.Store({
   state: {
 
     loggedInUsername: "",
-    following: "",
-
     storeUsername: "",
     
   },
@@ -21,9 +19,6 @@ export default new Vuex.Store({
     STORE_USER(state, username) {
       state.storeUsername = username;
     },
-    STORE_FOLLOWING(state, following) {
-      state.following = following;
-    }
     },
   }
 )

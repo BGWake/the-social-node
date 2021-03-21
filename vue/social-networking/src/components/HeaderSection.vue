@@ -36,7 +36,7 @@
             style="color:black"
             class="links lighten-4"
             :key="$route.fullPath"
-            :to="{name:'other-feed', params:{name : clickedUser}}"
+            :to="{name:'feed', params:{name : clickedUser}}"
             >
             <p
             style="color:black"
@@ -73,20 +73,39 @@ export default {
       clickedUser: "",
   }),
 
+  watch: {
+      '$route.path' (to, from) {
+        if(to !== from ) {
+          this.renderComponent();
+        }
+      }
+  },
+
   methods: {
+
+    renderComponent() {
+      socialService
+        .getAllUsernames()
+        .then((requestData) => {
+          this.allUsernames = requestData.data;
+        })
+        .catch((err) => {
+          console.error(err + " errors");
+        });
+      },
 
     logout() {
       this.currentUser = this.$store.state.loggedInUsername;
-
+      
       authService
       .logout(this.currentUser)
       .then((response) => {
         if (response.status == 201) {
-            console.log("Response was 201!");
-            this.$store.commit("SET_LOGGED_IN_USER", '');
+            let user = { username: "", following: ""};
+            this.$store.commit("SET_LOGGED_IN_USER", user);
             this.$router.push('/');
         } else {
-            console.log("Response was _NOT_ 200!");
+            console.error(response + " errors");
           }
       })
       .catch((err) => {
@@ -101,16 +120,7 @@ export default {
   },
 
   mounted() {
-      this.$store.commit("STORE_USER", "");
-
-      socialService
-      .getAllUsernames()
-      .then((requestData) => {
-        this.allUsernames = requestData.data;
-      })
-      .catch((err) => {
-        console.error(err + " errors");
-      });
+    this.renderComponent();
     },
   };
 </script>

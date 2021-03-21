@@ -3,10 +3,12 @@ package social.networking.model;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
+@Table(name = "post")
 public class Post {
 
     @Id

@@ -2,14 +2,14 @@ package social.networking.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import social.networking.model.Post;
-import social.networking.repository.PostRepository;
-import social.networking.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import social.networking.service.PostService;
+import social.networking.service.UserService;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,12 +25,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class SocialNetworkingControllerTest {
 
     LocalDateTime localDateTime = LocalDateTime.now();
+
     @Autowired
     private MockMvc mockMvc;
     @MockBean
-    private PostRepository postRepository;
+    private PostService postService;
     @MockBean
-    private UserRepository userRepository;
+    private UserService userService;
 
     @Test
     void get_all_posts_is_successful() throws Exception {
@@ -38,7 +39,7 @@ class SocialNetworkingControllerTest {
 
         post.setTime(localDateTime);
 
-        when(postRepository.findAll()).thenReturn(List.of(post));
+        when(postService.getAll()).thenReturn(List.of(post));
 
         mockMvc.perform(get("/post/all")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -46,7 +47,7 @@ class SocialNetworkingControllerTest {
                 .andExpect(jsonPath("$..username").value(post.getUsername()))
                 .andExpect(jsonPath("$..content").value(post.getContent()));
 
-        verify(postRepository).findAll();
+        verify(postService).getAll();
     }
 
     @Test
@@ -55,7 +56,7 @@ class SocialNetworkingControllerTest {
 
         post.setTime(localDateTime);
 
-        when(postRepository.findPostsByUsername(post.getUsername())).thenReturn(List.of(post));
+        when(postService.getPostsByUsername(post.getUsername())).thenReturn(List.of(post));
 
         mockMvc.perform(get("/post/Steve")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -63,7 +64,7 @@ class SocialNetworkingControllerTest {
                 .andExpect(jsonPath("$..username").value(post.getUsername()))
                 .andExpect(jsonPath("$..content").value(post.getContent()));
 
-        verify(postRepository).findPostsByUsername(post.getUsername());
+        verify(postService).getPostsByUsername(post.getUsername());
     }
 
     @Test
@@ -77,7 +78,7 @@ class SocialNetworkingControllerTest {
                 .content(new ObjectMapper().writeValueAsString(post)))
                 .andExpect(status().isCreated());
 
-        verify(postRepository).save(post);
+        verify(postService).create(post);
     }
 
 }

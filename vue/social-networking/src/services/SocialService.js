@@ -21,4 +21,8 @@ export default {
   getRelevantPosts(username) {
     return axios.get(`http://localhost:8080/feed/posts/${username}`);
   },
+
+  getFollowing(username) {
+    return axios.get(`http://localhost:8080/following/${username}`);
+  },
 }

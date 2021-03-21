@@ -43,7 +43,7 @@ const router = new Router({
     },
     {
       path: "/feed/:name",
-      name: "other-feed",
+      name: "feed",
       component: OtherFeed,
     },
   ]

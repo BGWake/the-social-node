@@ -1,7 +1,12 @@
 <template>
   <v-container>
-    <h1 class="timeline-header">Hi {{ currentUser }}! Welcome back to your Feed.</h1>
-
+    <h1 class="timeline-header" v-if="posts == ''">Hi {{ currentUser }}, make your first post below!</h1>
+    <p class="timeline-header" v-if="posts == ''">• You can follow other users to see their posts on your feed. 
+      <br>• If you tag a user using '@', your post will post to their feed in addition yours. 
+      For example: "Hey @bob, I want to introduce you to @steve!"
+      <br>• Other users will not see the posts of who you follow when they visit your feed, only your posts and posts you are tagged in.</p>
+    <h1 class="timeline-header" v-else>Hi {{ currentUser }}! Welcome to your Feed.</h1>
+    <br />
     <v-textarea
       outlined
       style="margin: 30px; width: 50%"
@@ -26,7 +31,7 @@
       <body>
         <strong>{{ post.username }}</strong> posted on {{ post.time.substring(0, 10) }} at
         {{ post.time.substring(11, 19) }}<br />
-        "{{ post.content }}"<br />
+        "{{ post.content }}"
       </body>
     </v-card>
   </v-container>
@@ -48,6 +53,21 @@ export default {
 
   methods: {
 
+    getYourRelevantPosts() {
+      socialService
+        .getRelevantPosts(this.currentUser)
+        .then((response) => {
+          if (response.status == 200) {
+          this.posts = response.data;
+          } else {
+          console.error(response + " errors")
+        }
+      })
+      .catch((err) => {
+        console.error(err + " errors");
+      });
+    },
+
     post() {
       this.newPost.username = this.currentUser;
 
@@ -55,17 +75,8 @@ export default {
         .createPost(this.newPost)
         .then((response) => {
           if (response.status == 201) {
-            console.log("Response was 201!");
-            socialService
-              .getRelevantPosts(this.currentUser)
-              .then((requestData) => {
-                this.posts = requestData.data;
-              })
-              .catch((err) => {
-                console.error(err + " errors");
-              });
+            this.getYourRelevantPosts(this.currentUser);
           } else {
-            console.log("Response was _NOT_ 201!");
             console.error(response + " errors")
           }
         })
@@ -79,27 +90,14 @@ export default {
       this.newPost.content = "";
     },
   },
-  created() {
+
+  mounted() {
     if (this.$store.state.loggedInUsername == "") {
       this.$router.push('/');
     }
     this.currentUser = this.$store.state.loggedInUsername;
-
-    socialService
-      .getRelevantPosts(this.currentUser)
-      .then((response) => {
-        if (response.status == 200) {
-        console.log("Response was 200!")
-        this.posts = response.data.flat();
-        } else {
-          console.log("Response was _NOT_ 200!");
-          console.error(response + " errors")
-        }
-      })
-      .catch((err) => {
-        console.error(err + " errors");
-      });
-    },
+    this.getYourRelevantPosts();
+  },
 };
 </script>
 

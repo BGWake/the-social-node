@@ -56,7 +56,6 @@
   </validation-observer>
  
 </v-container>
-
 </template>
 
 <script>
@@ -96,17 +95,17 @@ export default {
       },
       posts: [],
   }),
+
   methods: {
+
     login() {
       authService
       .login(this.user)
       .then((response) => {
         if (response.status == 201) {
-            console.log("Response was 201!");
             this.$store.commit("SET_LOGGED_IN_USER", this.user);
             this.$router.push('/your-feed');
         } else {
-            console.log("Response was _NOT_ 200!");
             this.$router.push('/');
           }
       })
