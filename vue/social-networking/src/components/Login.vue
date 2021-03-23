@@ -1,68 +1,68 @@
 <template>
-<v-container>
-   
-  <validation-observer ref="observer" v-slot="{ invalid }">
-     
-    <v-card outlined elevation="6" style="margin:30px; width: 50%" class="mx-auto pa-4 teal lighten-4"> 
-      <h2> Log In </h2>
-      <v-spacer></v-spacer>
-      <validation-provider 
-        v-slot="{ errors }"
-        name="username"
-        rules="required|max:50"
+  <v-container>
+    <validation-observer ref="observer" v-slot="{ invalid }">
+      <v-card
+        outlined
+        elevation="6"
+        style="margin: 30px; width: 50%"
+        class="mx-auto pa-4 teal lighten-4"
       >
-        <v-text-field
-          v-model="user.username"
-          :counter="50"
-          :error-messages="errors"
-          label="Username"
-          required
-          prepend-inner-icon="mdi-account-circle"
-        ></v-text-field>
-        
-      </validation-provider>
+        <h2>Log In</h2>
+        <v-spacer></v-spacer>
+        <v-form class="ma-2" @submit.prevent="submit">
+          <validation-provider
+            v-slot="{ errors }"
+            name="username"
+            rules="required|max:20"
+          >
+            <v-text-field
+              v-model="user.username"
+              :counter="20"
+              :error-messages="errors"
+              label="Username"
+              required
+              prepend-inner-icon="mdi-account-circle"
+            ></v-text-field>
+          </validation-provider>
 
-      <validation-provider
-        v-slot="{ errors }"
-        name="password"
-        rules="required|max:200"
-      >
-        <v-text-field
-          v-model="user.password"
-          :counter="200"
-          :error-messages="errors"
-          type="Password"
-          label="Password"
-          required
-          prepend-icon="mdi-lock"
-          append-icon="mdi-eye-off"
-        ></v-text-field>
-      </validation-provider>
-      <router-link :to="{ name: 'register' }">Need an account?</router-link>
-      <br />
-      <br />
-      <div id="login" class="text-center">
-        <v-btn
-          v-on:click="login"
-          class="mr-4"
-          type="submit"
-          :disabled="invalid"
-        >
-          submit
-        </v-btn>
-        <v-btn @click="clear"> clear </v-btn>
-      </div>
+          <validation-provider
+            v-slot="{ errors }"
+            name="password"
+            rules="required|min:4|max:20"
+          >
+            <v-text-field
+              v-model="user.password"
+              :counter="20"
+              :error-messages="errors"
+              type="Password"
+              label="Password"
+              required
+              prepend-inner-icon="mdi-lock"
+              append-icon="mdi-eye-off"
+            ></v-text-field>
+          </validation-provider>
+          <router-link :to="{ name: 'register' }">Need an account?</router-link>
+          <br />
+          <br />
+          <div id="login" class="text-center">
+            <v-btn v-on:click="login" class="mr-4" :disabled="invalid">
+              submit
+            </v-btn>
+            <v-btn @click="clear"> clear </v-btn>
+          </div>
+        </v-form>
       </v-card>
-  </validation-observer>
- 
-</v-container>
+    </validation-observer>
+    <div class="timeline-header" v-show="isPasswordIncorrect">
+      {{ isPasswordIncorrectMsg }}
+    </div>
+  </v-container>
 </template>
 
 <script>
 import authService from "../services/AuthService";
 
-
-import { required, max } from "vee-validate/dist/rules";
+import { required, max, min } from "vee-validate/dist/rules";
 import {
   extend,
   ValidationObserver,
@@ -82,38 +82,45 @@ extend("max", {
   message: "{_field_} may not be greater than {length} characters",
 });
 
+extend("min", {
+  ...min,
+  message: "{_field_} must be at least {length} characters",
+});
+
 export default {
   name: "login",
   components: {
     ValidationProvider,
     ValidationObserver,
   },
-  data: ()=> ({
-      user: {
-        username: "",
-        password: "",
-      },
-      posts: [],
+
+  data: () => ({
+    user: {
+      username: "",
+      password: "",
+    },
+    posts: [],
+    isPasswordIncorrect: false,
+    isPasswordIncorrectMsg:
+      "Incorrect password or account does not exist. You can register with the blue 'Need an account?' link.",
   }),
 
   methods: {
-
     login() {
       authService
-      .login(this.user)
-      .then((response) => {
-        if (response.status == 201) {
+        .login(this.user)
+        .then((response) => {
+          if (response.status == 201) {
             this.$store.commit("SET_LOGGED_IN_USER", this.user);
-            this.$router.push('/your-feed');
-        } else {
-            this.$router.push('/');
+            this.$router.push("/your-feed");
           }
-      })
-      .catch((err) => {
-        console.error(err + " errors");
-      });
+        })
+        .catch((err) => {
+          this.isPasswordIncorrect = true;
+          console.error(err + " errors");
+        });
     },
-  
+
     clear() {
       this.user.username = "";
       this.user.password = "";
@@ -121,9 +128,8 @@ export default {
       this.$refs.observer.reset();
     },
   },
-}
+};
 </script>
-
 
 <style>
 form {

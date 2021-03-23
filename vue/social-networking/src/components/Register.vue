@@ -1,76 +1,86 @@
 <template>
-  <v-card outlined elevation="6" style="margin:30px; width: 50%" class="mx-auto pa-4 teal lighten-4"> 
-      <h2> Register A New Account </h2>
-      <v-spacer></v-spacer>
+  <v-container>
+    <br />
     <validation-observer ref="observer" v-slot="{ invalid }">
-      <form class="ma-4" @submit.prevent="submit">
-
-        <validation-provider
-          v-slot="{ errors }"
-          name="username"
-          rules="required"
-        >
-          <v-text-field
-            class="mx-16"
-            v-model="user.username"
-            :error-messages="errors"
-            label="Username"
-            required
-            prepend-inner-icon="mdi-human-greeting"
-          ></v-text-field>
-        </validation-provider>
-
-        <validation-provider
-          v-slot="{ errors }"
-          name="password"
-          rules="required"
-        >
-          <v-text-field
-            class="mx-16"
-            v-model="user.password"
-            :error-messages="errors"
-            label="Password"
-            type="Password"
-            required
-            prepend-inner-icon="mdi-lock"
-          ></v-text-field>
-        </validation-provider>
-
-        <validation-provider
-          v-slot="{ errors }"
-          name="confirm"
-          rules="required"
-        >
-          <v-text-field
-            class="mx-16"
-            v-model="user.confirmPassword"
-            :error-messages="errors"
-            label="Confirm Password"
-            type="Password"
-            required
-            prepend-inner-icon="mdi-lock-alert-outline"
-          ></v-text-field>
-        </validation-provider>
-
-        <div id="login" class="text-center">
-          <v-btn
-            v-on:click="register"
-            class="mr-4"
-            type="submit"
-            :disabled="invalid"
+      <v-card
+        outlined
+        elevation="6"
+        style="margin: 30px; width: 50%"
+        class="mx-auto pa-4 teal lighten-4"
+      >
+        <h2>Register A New Account</h2>
+        <v-spacer></v-spacer>
+        <v-form class="ma-2" @submit.prevent="submit">
+          <validation-provider
+            v-slot="{ errors }"
+            name="username"
+            rules="required|max:20"
           >
-            submit
-          </v-btn>
-          <v-btn @click="clear"> clear </v-btn>
-        </div>
-      </form>
+            <v-text-field
+              v-model="user.username"
+              :counter="20"
+              :error-messages="errors"
+              label="Username"
+              required
+              prepend-inner-icon="mdi-human-greeting"
+            ></v-text-field>
+          </validation-provider>
+
+          <validation-provider
+            v-slot="{ errors }"
+            name="password"
+            rules="required|min:4|max:20"
+          >
+            <v-text-field
+              v-model="user.password"
+              :counter="20"
+              :error-messages="errors"
+              label="Password"
+              type="Password"
+              required
+              prepend-inner-icon="mdi-lock"
+              append-icon="mdi-eye-off"
+            ></v-text-field>
+          </validation-provider>
+
+          <validation-provider
+            v-slot="{ errors }"
+            name="confirm password"
+            rules="required|min:4|max:20"
+          >
+            <v-text-field
+              v-model="user.confirmPassword"
+              :counter="20"
+              :error-messages="errors"
+              label="Confirm Password"
+              type="Password"
+              required
+              prepend-inner-icon="mdi-lock-alert-outline"
+              append-icon="mdi-eye-off"
+            ></v-text-field>
+          </validation-provider>
+          <br />
+          <div id="login" class="text-center">
+            <v-btn v-on:click="register" class="mr-4" :disabled="invalid">
+              submit
+            </v-btn>
+            <v-btn @click="clear"> clear </v-btn>
+          </div>
+        </v-form>
+      </v-card>
     </validation-observer>
-  </v-card>
+    <div class="timeline-header" v-show="registrationErrors">
+      {{ registrationErrorMsg }}
+    </div>
+    <div class="timeline-header" v-show="userAlreadyExists">
+      {{ userAlreadyExistsMsg }}
+    </div>
+  </v-container>
 </template>
 
 <script>
 import authService from "../services/AuthService";
-import { required } from "vee-validate/dist/rules";
+import { required, max, min } from "vee-validate/dist/rules";
 import {
   extend,
   ValidationObserver,
@@ -85,19 +95,23 @@ extend("required", {
   message: "{_field_} can not be empty",
 });
 
-export default {
-  props: {
-    icons: {
-      default: '$vueitfy.icons.input'
-    }
-  },
+extend("max", {
+  ...max,
+  message: "{_field_} may not be greater than {length} characters",
+});
 
+extend("min", {
+  ...min,
+  message: "{_field_} must be at least {length} characters",
+});
+
+export default {
+  name: "register",
   components: {
     ValidationProvider,
     ValidationObserver,
   },
 
-  name: "register",
   data: () => ({
     user: {
       username: "",
@@ -105,17 +119,16 @@ export default {
       confirmPassword: "",
       following: "",
     },
-    
     registrationErrors: false,
-    registrationErrorMsg: "There were problems registering this user.",
+    registrationErrorMsg: "Password and Confirm Password do not match.",
+    userAlreadyExists: false,
+    userAlreadyExistsMsg: "Sorry, that username already exists.",
   }),
 
   methods: {
-
     register() {
       if (this.user.password != this.user.confirmPassword) {
         this.registrationErrors = true;
-        this.registrationErrorMsg = "Password & Confirm Password do not match.";
       } else {
         authService
           .register(this.user)
@@ -125,16 +138,11 @@ export default {
                 path: "/login",
                 query: { registration: "success" },
               });
-            } else {
-              this.$router.push("/register");
             }
           })
-          .catch((error) => {
-            const response = error.response;
-            this.registrationErrors = true;
-            if (response.status === 400) {
-              this.registrationErrorMsg = "Bad Request: Validation Errors";
-            }
+          .catch((err) => {
+            this.userAlreadyExists = true;
+            console.error(err + " errors");
           });
       }
     },
@@ -152,7 +160,6 @@ export default {
   },
 };
 </script>
-
 
 <style>
 form {

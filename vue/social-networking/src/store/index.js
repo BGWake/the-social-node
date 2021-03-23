@@ -8,7 +8,7 @@ export default new Vuex.Store({
 
     loggedInUsername: "",
     storeUsername: "",
-    
+
   },
   mutations: {
 
@@ -19,6 +19,6 @@ export default new Vuex.Store({
     STORE_USER(state, username) {
       state.storeUsername = username;
     },
-    },
-  }
+  },
+}
 )

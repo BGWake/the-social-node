@@ -27,7 +27,7 @@ public class AuthenticationController {
         return userService.logIn(user);
     }
 
-    @PostMapping("/logout")
+    @PostMapping("/logoutUser")
     public ResponseEntity<?> logOut(@Valid @RequestBody String username) {
         return userService.logOut(username);
     }

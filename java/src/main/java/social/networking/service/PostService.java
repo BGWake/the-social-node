@@ -7,7 +7,6 @@ import social.networking.repository.PostRepository;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
@@ -28,13 +27,9 @@ public class PostService {
 
     public List<Post> getPostsByUsername(String username) {
 
-        List<Post> yourRelevantPosts = new ArrayList<>();
+        List<Post> yourRelevantPosts = new ArrayList<>(postRepository.findPostsByUsername(username));
 
-        yourRelevantPosts.addAll(postRepository.findPostsByUsername(username));
-
-        List<Post> yourRelevantPostsFinal = findTagsInPosts(yourRelevantPosts, username);
-
-        return yourRelevantPostsFinal;
+        return findTagsInPostsAndAddToRelevantPosts(yourRelevantPosts, username);
     }
 
     public void create(Post post) {
@@ -51,24 +46,21 @@ public class PostService {
 
         String following = user.getFollowing();
         String[] followingArray = following.split(",");
-        System.out.println("Contents of the array ::" + Arrays.toString(followingArray));
 
         for (String followedUser : followingArray) {
             List<Post> followedUserPosts = postRepository.findPostsByUsername(followedUser);
             yourRelevantPosts.addAll(followedUserPosts);
         }
 
-        List<Post> yourRelevantPostsFinal = findTagsInPosts(yourRelevantPosts, username);
-
-        return yourRelevantPostsFinal;
+        return findTagsInPostsAndAddToRelevantPosts(yourRelevantPosts, username);
     }
 
-    public List<Post> findTagsInPosts(List<Post> yourRelevantPosts, String username) {
+    public List<Post> findTagsInPostsAndAddToRelevantPosts(List<Post> yourRelevantPosts, String username) {
         List<Post> allPosts = postRepository.findAll();
 
         for (Post post : allPosts) {
 
-            String taggedUser = "";
+            StringBuilder taggedUser = new StringBuilder();
             boolean tagFlag = false;
 
             for (int i = 0; i < post.getContent().length(); i++) {
@@ -76,12 +68,12 @@ public class PostService {
                         post.getContent().charAt(i) == '!' || post.getContent().charAt(i) == '?' ||
                         post.getContent().charAt(i) == ',') {
                     tagFlag = false;
-                    taggedUser = "";
+                    taggedUser = new StringBuilder();
                 }
                 if (tagFlag) {
-                    taggedUser += post.getContent().charAt(i);
+                    taggedUser.append(post.getContent().charAt(i));
 
-                    if (taggedUser.equals(username) && !yourRelevantPosts.contains(post)) {
+                    if (taggedUser.toString().equals(username) && !yourRelevantPosts.contains(post)) {
                         yourRelevantPosts.add(post);
                     }
                 }

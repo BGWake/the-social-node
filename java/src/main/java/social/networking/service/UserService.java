@@ -2,10 +2,12 @@ package social.networking.service;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import social.networking.model.User;
 import social.networking.repository.UserRepository;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,14 +22,25 @@ public class UserService {
 
     public ResponseEntity<?> register(User newUser) {
         List<User> users = userRepository.findAll();
+        boolean userAlreadyExists = false;
 
         for (User user : users) {
-            if (user.equals(newUser)) {
-                return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            if (user.getUsername().equals(newUser.getUsername())) {
+                userAlreadyExists = true;
+                break;
             }
         }
-        userRepository.save(newUser);
-        return new ResponseEntity<>(null, HttpStatus.CREATED);
+        if (userAlreadyExists) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        } else {
+            BCryptPasswordEncoder bCryptPasswordEncoder =
+                    new BCryptPasswordEncoder(4, new SecureRandom());
+            String encodedPassword = bCryptPasswordEncoder.encode(newUser.getPassword());
+
+            newUser.setPassword(encodedPassword);
+            userRepository.save(newUser);
+            return new ResponseEntity<>(null, HttpStatus.CREATED);
+        }
     }
 
     public ResponseEntity<?> logIn(User user) {
@@ -38,10 +51,14 @@ public class UserService {
             userRepository.save(loggedInUser);
         }
 
+        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+
         List<User> users = userRepository.findAll();
         for (User other : users) {
 
-            if (other.equals(user)) {
+            if (other.getUsername().equals(user.getUsername()) &&
+                    bCryptPasswordEncoder.matches(user.getPassword(), other.getPassword())) {
+
                 other.setLoggedIn(true);
                 userRepository.save(other);
                 return new ResponseEntity<>(null, HttpStatus.CREATED);
@@ -53,6 +70,7 @@ public class UserService {
     public ResponseEntity<?> logOut(String username) {
         List<User> users = userRepository.findAll();
         for (User other : users) {
+
             if ((other.getUsername() + "=").equals(username)) {
                 other.setLoggedIn(false);
                 userRepository.save(other);

@@ -1,6 +1,7 @@
 <template>
   <div>
-    <h1 class = "home-header ma-4">Welcome to Tweeter</h1>
+    <br />
+    <h1 class="home-header ma-4">Welcome to Tweeter</h1>
     <login />
   </div>
 </template>
@@ -9,9 +10,9 @@
 import Login from "@/components/Login.vue";
 
 export default {
-  components: { 
-    Login
-   },
+  components: {
+    Login,
+  },
 };
 </script>
 

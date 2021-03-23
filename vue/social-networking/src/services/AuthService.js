@@ -7,11 +7,11 @@ export default {
   },
 
   login(user) {
-    return axios.post('http://localhost:8080/login', user)
+    return axios.post('http://localhost:8080/login', user);
   },
 
-  logout(user) {
-    return axios.post('http://localhost:8080/logout', user)
+  logout(username) {
+    return axios.post('http://localhost:8080/logoutUser', username);
   },
 
 }

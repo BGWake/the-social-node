@@ -1,5 +1,6 @@
 package social.networking;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import social.networking.model.Post;
 import social.networking.model.User;
 import social.networking.repository.PostRepository;
@@ -7,24 +8,35 @@ import social.networking.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 
 @Component
 public class Populator implements CommandLineRunner {
 
-    private UserRepository userRepository;
-    private PostRepository postRepository;
+    private final UserRepository userRepository;
+    private final PostRepository postRepository;
 
     public Populator(UserRepository userRepository, PostRepository postRepository) {
         this.userRepository = userRepository;
         this.postRepository = postRepository;
     }
 
+    BCryptPasswordEncoder bCryptPasswordEncoder =
+            new BCryptPasswordEncoder(6, new SecureRandom());
+
     @Override
     public void run(String... args) {
         User user = new User("bob", "password", "");
         User user2 = new User("steve", "password", "");
         User user3 = new User("jim", "password", "");
+
+        String encodedPassword = bCryptPasswordEncoder.encode(user.getPassword());
+        user.setPassword(encodedPassword);
+        String encodedPassword2 = bCryptPasswordEncoder.encode(user2.getPassword());
+        user2.setPassword(encodedPassword2);
+        String encodedPassword3 = bCryptPasswordEncoder.encode(user3.getPassword());
+        user3.setPassword(encodedPassword3);
 
         userRepository.save(user);
         userRepository.save(user2);

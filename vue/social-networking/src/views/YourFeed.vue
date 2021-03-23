@@ -1,38 +1,52 @@
 <template>
   <v-container>
-    <h1 class="timeline-header" v-if="posts == ''">Hi {{ currentUser }}, make your first post below!</h1>
-    <p class="timeline-header" v-if="posts == ''">• You can follow other users to see their posts on your feed. 
-      <br>• If you tag a user using '@', your post will post to their feed in addition yours. 
-      For example: "Hey @bob, I want to introduce you to @steve!"
-      <br>• Other users will not see the posts of who you follow when they visit your feed, only your posts and posts you are tagged in.</p>
-    <h1 class="timeline-header" v-else>Hi {{ currentUser }}! Welcome to your Feed.</h1>
+    <br />
+    <h1 class="timeline-header" v-if="posts == ''">
+      Hi {{ currentUser }}, make your first post below!
+    </h1>
+    <p class="timeline-header" v-if="posts == ''">
+      • You can follow other users to see their posts on your feed. <br />
+      • If you tag a user using '@', your post will post to their feed in
+      addition to yours. For example: "Hey @bob, I want to introduce you to
+      @steve!" <br />
+      • Other users will not see the posts of who you follow when they visit
+      your feed, only your posts and posts you are tagged in.
+    </p>
+    <h1 class="timeline-header" v-else>
+      Hi {{ currentUser }}! Welcome to your Feed.
+    </h1>
     <br />
     <v-textarea
       outlined
       style="margin: 30px; width: 50%"
-      class="mx-auto timeline-header ma-2"
+      class="mx-auto ma-2"
       v-model="newPost.content"
       :counter="255"
       label="Type your post here"
     ></v-textarea>
 
     <span class="timeline-header">
-    <v-btn v-on:click="post" class="mx-2" type="submit"> post </v-btn> <v-btn @click="clear" class="mx-2"> clear </v-btn>
+      <v-btn v-on:click="post" class="mx-2" type="submit"> post </v-btn>
+      <v-btn @click="clear" class="mx-2"> clear </v-btn>
     </span>
 
     <v-card
       outlined
       elevation="6"
       style="margin: 30px; width: 50%"
-      class="mx-auto pa-4 light-blue lighten-5"
+      class="mx-auto light-blue lighten-5"
       v-for="post in posts.slice().reverse()"
-      :key="post.id"
+      :key="post.time"
+      v-model="post.id"
     >
-      <body>
-        <strong>{{ post.username }}</strong> posted on {{ post.time.substring(0, 10) }} at
-        {{ post.time.substring(11, 19) }}<br />
-        "{{ post.content }}"
-      </body>
+      <v-card-title class="headline font-weight-bold">{{
+        post.username
+      }}</v-card-title>
+      <v-card-subtitle
+        >posted on {{ post.time.substring(0, 10) }} at
+        {{ post.time.substring(11, 19) }}</v-card-subtitle
+      >
+      <v-card-text class="headline">"{{ post.content }}"</v-card-text>
     </v-card>
   </v-container>
 </template>
@@ -52,20 +66,23 @@ export default {
   }),
 
   methods: {
-
     getYourRelevantPosts() {
-      socialService
-        .getRelevantPosts(this.currentUser)
-        .then((response) => {
-          if (response.status == 200) {
-          this.posts = response.data;
-          } else {
-          console.error(response + " errors")
-        }
-      })
-      .catch((err) => {
-        console.error(err + " errors");
-      });
+      if (this.$store.state.loggedInUsername == "") {
+        this.$router.push("/");
+      } else {
+        socialService
+          .getRelevantPosts(this.currentUser)
+          .then((response) => {
+            if (response.status == 200) {
+              this.posts = response.data;
+            } else {
+              console.error(response + " errors");
+            }
+          })
+          .catch((err) => {
+            console.error(err + " errors");
+          });
+      }
     },
 
     post() {
@@ -77,7 +94,7 @@ export default {
           if (response.status == 201) {
             this.getYourRelevantPosts(this.currentUser);
           } else {
-            console.error(response + " errors")
+            console.error(response + " errors");
           }
         })
         .catch((err) => {
@@ -92,9 +109,6 @@ export default {
   },
 
   mounted() {
-    if (this.$store.state.loggedInUsername == "") {
-      this.$router.push('/');
-    }
     this.currentUser = this.$store.state.loggedInUsername;
     this.getYourRelevantPosts();
   },
