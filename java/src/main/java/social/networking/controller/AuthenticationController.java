@@ -32,7 +32,7 @@ public class AuthenticationController {
         return userService.logOut(username);
     }
 
-    @DeleteMapping("/user/all")
+    @DeleteMapping("/delete/all")
     public ResponseEntity<?> deleteUsers() {
         return userService.deleteUsers();
     }

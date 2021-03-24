@@ -32,7 +32,7 @@
             style="color: black"
             class="links lighten-4"
             :key="$route.fullPath"
-            :to="{ name: `feed`, params: { name: clickedUser } }"
+            :to="'/feed/' + clickedUser"
           >
             <span
               style="color: black"

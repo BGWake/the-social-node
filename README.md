@@ -5,7 +5,7 @@
 - Define Project JDK as Java 11
 - Run Application.java
 - Refer to the README.md in the `vue` folder to start the front-end
-- Access other user's feeds using the hamburger button in the top left
+- Access user feeds using the hamburger button in the top left
 
 ### Description
 A full-stack web application inspired by Twitter and a kata

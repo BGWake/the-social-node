@@ -53,7 +53,7 @@ public class SocialNetworkingController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/user/all")
-    public List<String> findUsernames() {
+    public List<String> getAllUsernames() {
         return userService.getAllUsernames();
     }
 

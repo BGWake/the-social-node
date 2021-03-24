@@ -39,9 +39,9 @@
       :key="post.time"
       v-model="post.id"
     >
-      <v-card-title class="headline font-weight-bold">{{
-        post.username
-      }}</v-card-title>
+      <v-card-title class="headline font-weight-bold">
+        {{ post.username }}</v-card-title
+      >
       <v-card-subtitle
         >posted on {{ post.time.substring(0, 10) }} at
         {{ post.time.substring(11, 19) }}</v-card-subtitle

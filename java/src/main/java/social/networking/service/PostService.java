@@ -60,31 +60,21 @@ public class PostService {
 
         for (Post post : allPosts) {
 
-            StringBuilder taggedUser = new StringBuilder();
-            boolean tagFlag = false;
+            if ((post.getContent().contains("@" + username + " ") || post.getContent().contains("@" + username + ".") ||
+                    post.getContent().contains("@" + username + "!") ||
+                    post.getContent().contains("@" + username + "?") ||
+                    post.getContent().contains("@" + username + ",")) && !yourRelevantPosts.contains(post)) {
 
-            for (int i = 0; i < post.getContent().length(); i++) {
-                if (post.getContent().charAt(i) == ' ' || post.getContent().charAt(i) == '.' ||
-                        post.getContent().charAt(i) == '!' || post.getContent().charAt(i) == '?' ||
-                        post.getContent().charAt(i) == ',') {
-                    tagFlag = false;
-                    taggedUser = new StringBuilder();
-                }
-                if (tagFlag) {
-                    taggedUser.append(post.getContent().charAt(i));
+                yourRelevantPosts.add(post);
+            }
+            if (post.getContent().endsWith("@" + username) &&
+                    !yourRelevantPosts.contains(post)) {
 
-                    if (taggedUser.toString().equals(username) && !yourRelevantPosts.contains(post)) {
-                        yourRelevantPosts.add(post);
-                    }
-                }
-                if (post.getContent().charAt(i) == '@') {
-                    tagFlag = true;
+                    yourRelevantPosts.add(post);
                 }
             }
-        }
         yourRelevantPosts.sort(Comparator.comparing(Post::getTime));
 
         return yourRelevantPosts;
     }
 }
-
