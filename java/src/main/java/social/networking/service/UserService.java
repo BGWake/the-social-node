@@ -105,7 +105,7 @@ public class UserService {
         for (User other : users) {
 
             if (other.getUsername().equals(user.getUsername())
-                    && !other.getFollowing().contains(user.getFollowing())) {
+                    && !other.getFollowing().contains(user.getFollowing() + ",")) {
                 if (other.getFollowing().equals("")) {
                     other.setFollowing(user.getFollowing() + ",");
                 } else {
