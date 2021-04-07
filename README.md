@@ -12,7 +12,7 @@ A full-stack desktop web application inspired by Twitter and a kata
 
 ### Notes
 - Logging in is required for most functionality, and it is encouraged to register your own account
-- Existing users are `bob`, `steve`, `anne`, and `jim` all with the password `password`
+- Existing users are `bob`, `tom`, `anne`, and `jim` all with the password `password`
 - Register, login, post, follow, like, unlike, @ tagging, and adding a picture from a link are all existing functions
 - If you wish to view the local database, go to `http://localhost:8080/h2-console`
   - Default credentials: Username: `sa` with an empty password

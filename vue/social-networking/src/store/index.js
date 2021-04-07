@@ -11,6 +11,7 @@ export default new Vuex.Store({
     postsInCaseOfLogOut: [],
     allUsers: [],
   },
+
   mutations: {
 
     SET_LOGGED_IN_USER(state, user) {

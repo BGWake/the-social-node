@@ -161,9 +161,13 @@ export default {
         let currentUserInLikesWithTwoCommas = ", " + this.currentUser + ", ";
         let currentUserInLikesWithCommaBefore = ", " + this.currentUser;
         let currentUserInLikesWithCommaAfter = this.currentUser + ", ";
+        let commaSpace = ", ";
 
         if (post.likes.includes(currentUserInLikesWithTwoCommas)) {
-          post.likes = post.likes.replace(currentUserInLikesWithTwoCommas, "");
+          post.likes = post.likes.replace(
+            currentUserInLikesWithTwoCommas,
+            commaSpace
+          );
         } else if (post.likes.includes(currentUserInLikesWithCommaBefore)) {
           post.likes = post.likes.replace(
             currentUserInLikesWithCommaBefore,
@@ -171,7 +175,7 @@ export default {
           );
         } else if (post.likes.includes(currentUserInLikesWithCommaAfter)) {
           post.likes = post.likes.replace(currentUserInLikesWithCommaAfter, "");
-        } else if (post.likes.includes(this.currentUser)) {
+        } else {
           post.likes = post.likes.replace(this.currentUser, "");
         }
 
@@ -182,6 +186,7 @@ export default {
         }
       } else {
         this.liked.push(post.id);
+
         if (this.currentUser != "" && post.likes != null && post.likes != "") {
           post.likes = post.likes + ", " + this.currentUser;
         } else {
