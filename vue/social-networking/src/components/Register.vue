@@ -59,6 +59,20 @@
               append-icon="mdi-eye-off"
             ></v-text-field>
           </validation-provider>
+
+          <validation-provider
+            v-slot="{ errors }"
+            name="link a profile picture"
+            rules="min:8|max:100"
+          >
+            <v-text-field
+              v-model="user.profilePic"
+              :counter="100"
+              :error-messages="errors"
+              label="Link A Profile Picture (Optional)"
+              prepend-inner-icon="mdi-camera"
+            ></v-text-field>
+          </validation-provider>
           <br />
           <div id="login" class="text-center">
             <v-btn v-on:click="register" class="mr-4" :disabled="invalid">
@@ -118,6 +132,7 @@ export default {
       password: "",
       confirmPassword: "",
       following: "",
+      profilePic: "",
     },
     registrationErrors: false,
     registrationErrorMsg: "Password and Confirm Password do not match.",
@@ -154,6 +169,7 @@ export default {
       this.user.username = "";
       this.user.password = "";
       this.user.confirmPassword = "";
+      this.user.profilePic = "";
 
       this.$refs.observer.reset();
     },
@@ -162,7 +178,4 @@ export default {
 </script>
 
 <style>
-form {
-  margin: ma-8;
-}
 </style>

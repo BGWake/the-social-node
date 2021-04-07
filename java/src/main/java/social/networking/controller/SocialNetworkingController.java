@@ -1,9 +1,12 @@
 package social.networking.controller;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import social.networking.model.Post;
 import social.networking.model.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import social.networking.model.UserView;
+import social.networking.repository.UserRepository;
 import social.networking.service.PostService;
 import social.networking.service.UserService;
 
@@ -15,10 +18,12 @@ public class SocialNetworkingController {
 
     private final PostService postService;
     private final UserService userService;
+    private final UserRepository userRepository;
 
-    public SocialNetworkingController(PostService postService, UserService userService) {
+    public SocialNetworkingController(PostService postService, UserService userService, UserRepository userRepository) {
         this.postService = postService;
         this.userService = userService;
+        this.userRepository = userRepository;
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -45,6 +50,10 @@ public class SocialNetworkingController {
         return postService.getAllRelevantToYourFeed(username);
     }
 
+    @ResponseStatus(HttpStatus.CREATED)
+    @PutMapping("/post/all/save")
+    public void updatePosts(@RequestBody List<Post> posts) { postService.updateRelevantPosts(posts); }
+
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/user/{username}")
     public User getUserByUsername(@PathVariable String username) {
@@ -53,8 +62,9 @@ public class SocialNetworkingController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/user/all")
-    public List<String> getAllUsernames() {
-        return userService.getAllUsernames();
+    @JsonView(UserView.Public.class)
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
     }
 
     @ResponseStatus(HttpStatus.CREATED)

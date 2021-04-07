@@ -27,9 +27,10 @@ public class Populator implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        User user = new User("bob", "password", "");
-        User user2 = new User("steve", "password", "");
-        User user3 = new User("jim", "password", "");
+        User user = new User("bob", "password", "", "https://www.nicepng.com/png/full/115-1150821_default-avatar-comments-sign-in-icon-png.png");
+        User user2 = new User("tom", "password", "", "https://pbs.twimg.com/profile_images/1237550450/mstom_400x400.jpg");
+        User user3 = new User("anne", "password", "", "https://www.nicepng.com/png/full/115-1150821_default-avatar-comments-sign-in-icon-png.png");
+        User user4 = new User("jim", "password", "", "https://www.nicepng.com/png/full/115-1150821_default-avatar-comments-sign-in-icon-png.png");
 
         String encodedPassword = bCryptPasswordEncoder.encode(user.getPassword());
         user.setPassword(encodedPassword);
@@ -37,17 +38,23 @@ public class Populator implements CommandLineRunner {
         user2.setPassword(encodedPassword2);
         String encodedPassword3 = bCryptPasswordEncoder.encode(user3.getPassword());
         user3.setPassword(encodedPassword3);
+        String encodedPassword4 = bCryptPasswordEncoder.encode(user4.getPassword());
+        user4.setPassword(encodedPassword4);
 
         userRepository.save(user);
         userRepository.save(user2);
         userRepository.save(user3);
+        userRepository.save(user4);
 
-        Post post = new Post("bob", "Had a good day.");
-        Post post2 = new Post("bob", "Walked the dog today!");
-        Post post3 = new Post("steve", "I wonder if it'll snow?");
-        Post post4 = new Post("steve", "It's snowing!");
-        Post post5 = new Post("jim", "It's my birthday!");
-        Post post6 = new Post("jim", "Come over at 7 for the party.");
+        Post post = new Post("bob", "Had a good day.", "tom");
+        Post post2 = new Post("bob", "Walked the dog today!", "");
+        Post post3 = new Post("tom", "I wonder if it'll rain?", "bob, jim");
+        Post post4 = new Post("tom", "It's raining!", "");
+        Post post5 = new Post("anne", "Rode my bike on my favorite trail today.", "bob");
+        Post post6 = new Post("anne", "Tag me if you know of any good ones in the area!", "jim");
+        Post post7 = new Post("jim", "Hey @anne, there's a great trail 15 miles west of town.", "anne");
+        Post post8 = new Post("jim", "It's my birthday!", "bob");
+        Post post9 = new Post("jim", "Come over at 7 for the party.", "bob, tom");
 
         postRepository.save(post);
         post2.setTime(LocalDateTime.now().plusSeconds(1));
@@ -60,5 +67,11 @@ public class Populator implements CommandLineRunner {
         postRepository.save(post5);
         post6.setTime(LocalDateTime.now().plusSeconds(5));
         postRepository.save(post6);
+        post7.setTime(LocalDateTime.now().plusSeconds(6));
+        postRepository.save(post7);
+        post8.setTime(LocalDateTime.now().plusSeconds(7));
+        postRepository.save(post8);
+        post9.setTime(LocalDateTime.now().plusSeconds(8));
+        postRepository.save(post9);
     }
 }

@@ -10,7 +10,7 @@ export default {
     return axios.post('http://localhost:8080/post/save', post);
   },
 
-  getAllUsernames() {
+  getAllUsers() {
     return axios.get('http://localhost:8080/user/all');
   },
 
@@ -20,6 +20,10 @@ export default {
 
   getRelevantPosts(username) {
     return axios.get(`http://localhost:8080/feed/posts/${username}`);
+  },
+
+  updateRelevantPosts(posts) {
+    return axios.put('http://localhost:8080/post/all/save', posts);
   },
 
   getFollowing(username) {

@@ -5,13 +5,15 @@
       <router-link text class="home" router :to="{ name: 'home' }"
         ><h1>
           <v-toolbar-title class="text-uppercase home">
-            Tweeter
+            The Social Node
           </v-toolbar-title>
         </h1></router-link
       >
       <v-spacer />
 
-      <v-btn v-show="currentUser != ''" @click="logout"> logout </v-btn>
+      <v-btn id="logout" v-show="currentUser != ''" @click="logout">
+        logout
+      </v-btn>
     </v-app-bar>
 
     <v-navigation-drawer app v-model="drawer" temporary class="lighten-5">
@@ -23,7 +25,7 @@
             class="links lighten-4"
             :to="{ name: 'your-feed' }"
           >
-            Your Tweeter Feed
+            <span class="links">Your Node</span>
           </router-link>
 
           <u class="ma-3">Follow the Community</u>
@@ -37,12 +39,12 @@
             <span
               style="color: black"
               class="links lighten-4"
-              v-for="username in allUsernames"
-              :key="username"
-              v-show="username != currentUser"
-              v-on:click="storeUser(username)"
+              v-for="user in allUsers"
+              :key="user.username"
+              v-show="user.username != currentUser"
+              v-on:click="storeUser(user.username)"
             >
-              {{ username }}'s Feed
+              {{ user.username }}'s Node
             </span>
           </router-link>
         </li>
@@ -61,9 +63,10 @@ export default {
     drawer: false,
     logOutButton: [{ name: "Log Out", route: "logout" }],
     navLinks: [{ name: "Your Feed", route: "your-feed" }],
-    allUsernames: [],
+    allUsers: [],
     currentUser: "",
     clickedUser: "",
+    posts: [],
   }),
 
   watch: {
@@ -79,9 +82,10 @@ export default {
       this.currentUser = this.$store.state.loggedInUsername;
 
       socialService
-        .getAllUsernames()
+        .getAllUsers()
         .then((requestData) => {
-          this.allUsernames = requestData.data;
+          this.allUsers = requestData.data;
+          this.$store.commit("STORE_ALL_USERS", this.allUsers);
         })
         .catch((err) => {
           console.error(err + " errors");
@@ -89,6 +93,9 @@ export default {
     },
 
     logout() {
+      this.posts = this.$store.state.postsInCaseOfLogOut;
+      socialService.updateRelevantPosts(this.posts);
+
       let user = { username: "", following: "" };
 
       authService
@@ -129,13 +136,30 @@ ul {
 }
 
 .links {
-  display: grid;
+  display: flex;
+  justify-content: space-around;
+  flex-direction: column;
   text-decoration: none;
   margin: 10%;
 }
 
 .home {
+  margin-left: 20px;
+  transform: scale(1.1);
+  transition: 1.3s;
+  letter-spacing: 3px;
+  text-shadow: 2px 2px 3px rgba(46, 110, 248, 0.41);
   text-decoration: none;
   color: black;
+}
+
+.home:hover {
+  margin-left: 20px;
+  transform: scale(1.1);
+  transition: 1.3s;
+  letter-spacing: 3px;
+  text-shadow: 2px 2px 3px black;
+  text-decoration: none;
+  color: rgba(90, 6, 6, 0);
 }
 </style>

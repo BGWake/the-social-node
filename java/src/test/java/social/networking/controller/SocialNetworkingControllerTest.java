@@ -8,6 +8,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import social.networking.repository.UserRepository;
 import social.networking.service.PostService;
 import social.networking.service.UserService;
 
@@ -32,10 +33,12 @@ class SocialNetworkingControllerTest {
     private PostService postService;
     @MockBean
     private UserService userService;
+    @MockBean
+    private UserRepository userRepository;
 
     @Test
     void get_all_posts_is_successful() throws Exception {
-        Post post = new Post("Bob", "Had a good day!");
+        Post post = new Post("Bob", "Had a good day!", "test,test");
 
         post.setTime(localDateTime);
 
@@ -45,14 +48,15 @@ class SocialNetworkingControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$..username").value(post.getUsername()))
-                .andExpect(jsonPath("$..content").value(post.getContent()));
+                .andExpect(jsonPath("$..content").value(post.getContent()))
+                .andExpect(jsonPath("$..likes").value(post.getLikes()));
 
         verify(postService).getAll();
     }
 
     @Test
     void get_posts_by_username_is_successful() throws Exception {
-        Post post = new Post("Steve", "Walked the dog today!");
+        Post post = new Post("Steve", "Walked the dog today!", "test,test");
 
         post.setTime(localDateTime);
 
@@ -62,14 +66,15 @@ class SocialNetworkingControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$..username").value(post.getUsername()))
-                .andExpect(jsonPath("$..content").value(post.getContent()));
+                .andExpect(jsonPath("$..content").value(post.getContent()))
+                .andExpect(jsonPath("$..likes").value(post.getLikes()));
 
         verify(postService).getPostsByUsername(post.getUsername());
     }
 
     @Test
     void create_post_is_successful() throws Exception {
-        Post post = new Post("Tom", "Had a big lunch!");
+        Post post = new Post("Tom", "Had a big lunch!", "test,test");
 
         post.setTime(localDateTime);
 

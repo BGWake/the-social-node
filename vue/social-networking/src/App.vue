@@ -26,5 +26,22 @@ export default {
 h2 {
   display: flex;
   justify-content: center;
+  font-family: monospace;
+}
+
+ul {
+  font-family: monospace;
+}
+
+#login {
+  font-family: monospace;
+}
+
+#register {
+  font-family: monospace;
+}
+
+#logout {
+  font-family: monospace;
 }
 </style>

@@ -1,5 +1,7 @@
 package social.networking.model;
 
+import com.fasterxml.jackson.annotation.JsonView;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.Objects;
@@ -10,20 +12,28 @@ public class User {
 
     @Id
     @GeneratedValue
+    @JsonView(UserView.Public.class)
     private Long id;
     @NotNull
+    @JsonView(UserView.Public.class)
     private String username;
     @NotNull
+    @JsonView(UserView.Private.class)
     private String password;
     @NotNull
+    @JsonView(UserView.Public.class)
     private boolean loggedIn;
+    @JsonView(UserView.Public.class)
     private String following;
+    @JsonView(UserView.Public.class)
+    private String profilePic;
 
-    public User(String username, String password, String following) {
+    public User(String username, String password, String following, String profilePic) {
         this.username = username;
         this.password = password;
         this.loggedIn = false;
         this.following = following;
+        this.profilePic = profilePic;
     }
 
     public User() {
@@ -67,6 +77,14 @@ public class User {
 
     public void setFollowing(String following) {
         this.following = following;
+    }
+
+    public String getProfilePic() {
+        return profilePic;
+    }
+
+    public void setProfilePic(String profilePic) {
+        this.profilePic = profilePic;
     }
 
     @Override

@@ -33,9 +33,16 @@ public class PostService {
     }
 
     public void create(Post post) {
-        post.setTime(LocalDateTime.now());
 
+        post.setTime(LocalDateTime.now());
         postRepository.save(post);
+    }
+
+    public void updateRelevantPosts(List<Post> posts) {
+
+        for (Post post : posts) {
+            postRepository.save(post);
+        }
     }
 
     public List<Post> getAllRelevantToYourFeed(String username) {

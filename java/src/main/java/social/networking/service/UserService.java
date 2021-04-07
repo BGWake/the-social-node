@@ -38,6 +38,12 @@ public class UserService {
             String encodedPassword = bCryptPasswordEncoder.encode(newUser.getPassword());
 
             newUser.setPassword(encodedPassword);
+
+            if (newUser.getProfilePic() == "") {
+                newUser.setProfilePic
+                        ("https://www.nicepng.com/png/full/115-1150821_default-avatar-comments-sign-in-icon-png.png");
+            }
+
             userRepository.save(newUser);
             return new ResponseEntity<>(null, HttpStatus.CREATED);
         }

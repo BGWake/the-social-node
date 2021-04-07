@@ -8,7 +8,8 @@ export default new Vuex.Store({
 
     loggedInUsername: "",
     storeUsername: "",
-
+    postsInCaseOfLogOut: [],
+    allUsers: [],
   },
   mutations: {
 
@@ -19,6 +20,12 @@ export default new Vuex.Store({
     STORE_USER(state, username) {
       state.storeUsername = username;
     },
+    STORE_POSTS_IN_CASE_OF_LOGOUT(state, posts) {
+      state.postsInCaseOfLogOut = posts;
+    },
+    STORE_ALL_USERS(state, allUsers) {
+      state.allUsers = allUsers;
+    }
   },
 }
 )

@@ -5,15 +5,15 @@
       Hi {{ currentUser }}, make your first post below!
     </h1>
     <p class="timeline-header" v-if="posts == ''">
-      • You can follow other users to see their posts on your feed. <br />
-      • If you tag a user using '@', your post will post to their feed in
+      • You can follow other users to see their posts on your Node. <br />
+      • If you tag a user using '@', your post will post to their Node in
       addition to yours. For example: "Hey @bob, I want to introduce you to
       @steve!" <br />
       • Other users will not see the posts of who you follow when they visit
-      your feed, only your posts and posts you are tagged in.
+      your node, only your posts and posts you are tagged in.
     </p>
     <h1 class="timeline-header" v-else>
-      Hi {{ currentUser }}! Welcome to your Feed.
+      Hi {{ currentUser }}! Welcome to your Node.
     </h1>
     <br />
     <v-textarea
@@ -31,22 +31,59 @@
     </span>
 
     <v-card
+      id="cards"
       outlined
       elevation="6"
       style="margin: 30px; width: 50%"
-      class="mx-auto light-blue lighten-5"
+      class="mx-auto"
       v-for="post in posts.slice().reverse()"
       :key="post.time"
       v-model="post.id"
     >
-      <v-card-title class="headline font-weight-bold">
-        {{ post.username }}</v-card-title
-      >
-      <v-card-subtitle
+      <div class="d-flex justify-space-between">
+        <v-card-title class="headline font-weight-bold">
+          {{ post.username }}</v-card-title
+        >
+        <v-img
+          class="mt-5 mr-5 rounded-xl"
+          :lazy-src="findPhoto(post.username)"
+          alt=""
+          max-height="100"
+          max-width="100"
+          :src="findPhoto(post.username)"
+        ></v-img>
+      </div>
+      <v-card-subtitle class="mt-n12"
         >posted on {{ post.time.substring(0, 10) }} at
         {{ post.time.substring(11, 19) }}</v-card-subtitle
       >
+
       <v-card-text class="headline">"{{ post.content }}"</v-card-text>
+      <v-card-subtitle
+        v-if="
+          $store.state.loggedInUsername != '' && liked.indexOf(post.id) != -1
+        "
+      >
+        <v-icon color="red" type="submit" @click="likeClick(post)"
+          >mdi-heart
+        </v-icon>
+        <span v-show="post.likes != '' && post.likes != null">
+          Liked by {{ post.likes }}</span
+        >
+      </v-card-subtitle>
+
+      <v-card-subtitle v-else>
+        <v-icon
+          v-show="$store.state.loggedInUsername != ''"
+          class="heart"
+          type="submit"
+          @click="likeClick(post)"
+          >mdi-heart
+        </v-icon>
+        <span v-show="post.likes != '' && post.likes != null">
+          Liked by {{ post.likes }}</span
+        >
+      </v-card-subtitle>
     </v-card>
   </v-container>
 </template>
@@ -63,6 +100,8 @@ export default {
     },
     currentUser: "",
     posts: [],
+    liked: [],
+    allUsers: [],
   }),
 
   methods: {
@@ -75,6 +114,12 @@ export default {
           .then((response) => {
             if (response.status == 200) {
               this.posts = response.data;
+
+              for (var i = 0; i < this.posts.length; i++) {
+                if (this.posts[i].likes.includes(this.currentUser)) {
+                  this.liked.push(this.posts[i].id);
+                }
+              }
             } else {
               console.error(response + " errors");
             }
@@ -85,6 +130,58 @@ export default {
       }
     },
 
+    findPhoto(username) {
+      this.allUsers = this.$store.state.allUsers;
+
+      for (var i = 0; i < this.allUsers.length; i++) {
+        if (this.allUsers[i].username == username) {
+          return this.allUsers[i].profilePic;
+        }
+      }
+    },
+
+    updatePosts() {
+      socialService.updateRelevantPosts(this.posts);
+    },
+
+    likeClick(post) {
+      if (this.liked.includes(post.id)) {
+        let currentUserInLikesWithTwoCommas = ", " + this.currentUser + ", ";
+        let currentUserInLikesWithCommaBefore = ", " + this.currentUser;
+        let currentUserInLikesWithCommaAfter = this.currentUser + ", ";
+
+        if (post.likes.includes(currentUserInLikesWithTwoCommas)) {
+          post.likes = post.likes.replace(currentUserInLikesWithTwoCommas, "");
+        } else if (post.likes.includes(currentUserInLikesWithCommaBefore)) {
+          post.likes = post.likes.replace(
+            currentUserInLikesWithCommaBefore,
+            ""
+          );
+        } else if (post.likes.includes(currentUserInLikesWithCommaAfter)) {
+          post.likes = post.likes.replace(currentUserInLikesWithCommaAfter, "");
+        } else if (post.likes.includes(this.currentUser)) {
+          post.likes = post.likes.replace(this.currentUser, "");
+        }
+
+        for (var i = 0; i < this.liked.length; i++) {
+          if (this.liked[i] === post.id) {
+            this.liked.splice(i, 1);
+          }
+        }
+      } else {
+        this.liked.push(post.id);
+
+        if (this.currentUser != "" && post.likes != null && post.likes != "") {
+          post.likes = post.likes + ", " + this.currentUser;
+        } else {
+          post.likes = this.currentUser;
+        }
+      }
+
+      this.updatePosts();
+      this.$store.commit("STORE_POSTS_IN_CASE_OF_LOGOUT", this.posts);
+    },
+
     post() {
       this.newPost.username = this.currentUser;
 
@@ -92,7 +189,11 @@ export default {
         .createPost(this.newPost)
         .then((response) => {
           if (response.status == 201) {
-            this.getYourRelevantPosts(this.currentUser);
+            socialService
+              .getRelevantPosts(this.currentUser)
+              .then((response) => {
+                this.posts = response.data;
+              });
           } else {
             console.error(response + " errors");
           }
@@ -110,14 +211,11 @@ export default {
 
   mounted() {
     this.currentUser = this.$store.state.loggedInUsername;
+
     this.getYourRelevantPosts();
   },
 };
 </script>
 
 <style>
-.timeline-header {
-  display: flex;
-  justify-content: center;
-}
 </style>

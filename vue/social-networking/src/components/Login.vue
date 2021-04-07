@@ -102,7 +102,7 @@ export default {
     posts: [],
     isPasswordIncorrect: false,
     isPasswordIncorrectMsg:
-      "Incorrect password or account does not exist. You can register with the blue 'Need an account?' link.",
+      "Incorrect password or account does not exist. You can register with the 'Need an account?' link.",
   }),
 
   methods: {
@@ -132,7 +132,4 @@ export default {
 </script>
 
 <style>
-form {
-  margin: ma-8;
-}
 </style>

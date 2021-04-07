@@ -17,11 +17,13 @@ public class Post {
     private String username;
     private String content;
     private String time;
+    private String likes;
 
-    public Post(String username, String content) {
+    public Post(String username, String content, String likes) {
         this.username = username;
         this.content = content;
         this.time = LocalDateTime.now().toString();
+        this.likes = likes;
     }
 
     public Post() {
@@ -57,6 +59,14 @@ public class Post {
 
     public void setTime(LocalDateTime time) {
         this.time = time.toString();
+    }
+
+    public String getLikes() {
+        return likes;
+    }
+
+    public void setLikes(String likes) {
+        this.likes = likes;
     }
 
     @Override

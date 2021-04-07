@@ -1,7 +1,7 @@
 <template>
   <div>
     <br />
-    <h1 class="home-header ma-4">Welcome to Tweeter</h1>
+    <h1 class="home-header ma-4">Welcome to The Social Node</h1>
     <login />
   </div>
 </template>
@@ -20,5 +20,6 @@ export default {
 .home-header {
   display: flex;
   justify-content: center;
+  font-family: monospace;
 }
 </style>

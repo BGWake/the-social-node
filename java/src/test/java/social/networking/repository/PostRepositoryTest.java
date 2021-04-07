@@ -20,7 +20,7 @@ class PostRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        post = new Post("test", "test");
+        post = new Post("test", "test", "test");
         postRepository.deleteAll();
     }
 
