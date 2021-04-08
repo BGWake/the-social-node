@@ -58,7 +58,6 @@ import authService from "../services/AuthService";
 import socialService from "../services/SocialService";
 
 export default {
-  name: "headerSection",
   data: () => ({
     drawer: false,
     logOutButton: [{ name: "Log Out", route: "logout" }],

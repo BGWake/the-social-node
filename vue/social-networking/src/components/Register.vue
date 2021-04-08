@@ -63,11 +63,11 @@
           <validation-provider
             v-slot="{ errors }"
             name="link a profile picture"
-            rules="min:8|max:100"
+            rules="min:8|max:250"
           >
             <v-text-field
               v-model="user.profilePic"
-              :counter="100"
+              :counter="250"
               :error-messages="errors"
               label="Link A Profile Picture (Optional)"
               prepend-inner-icon="mdi-camera"
@@ -75,7 +75,7 @@
           </validation-provider>
           <br />
           <div id="login" class="text-center">
-            <v-btn v-on:click="register" class="mr-4" :disabled="invalid">
+            <v-btn @click="register" class="mr-4" :disabled="invalid">
               submit
             </v-btn>
             <v-btn @click="clear"> clear </v-btn>
@@ -83,10 +83,10 @@
         </v-form>
       </v-card>
     </validation-observer>
-    <div class="timeline-header" v-show="registrationErrors">
+    <div class="node-headline" v-show="registrationErrors">
       {{ registrationErrorMsg }}
     </div>
-    <div class="timeline-header" v-show="userAlreadyExists">
+    <div class="node-headline" v-show="userAlreadyExists">
       {{ userAlreadyExistsMsg }}
     </div>
   </v-container>
@@ -120,7 +120,6 @@ extend("min", {
 });
 
 export default {
-  name: "register",
   components: {
     ValidationProvider,
     ValidationObserver,
@@ -165,6 +164,7 @@ export default {
     submit() {
       this.$refs.observer.validate();
     },
+
     clear() {
       this.user.username = "";
       this.user.password = "";

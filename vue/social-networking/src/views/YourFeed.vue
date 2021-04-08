@@ -1,10 +1,10 @@
 <template>
   <v-container>
     <br />
-    <h1 class="timeline-header" v-if="posts == ''">
+    <h1 class="node-headline" v-if="posts == ''">
       Hi {{ currentUser }}, make your first post below!
     </h1>
-    <p class="timeline-header" v-if="posts == ''">
+    <p class="node-headline" v-if="posts == ''">
       • You can follow other users to see their posts on your Node. <br />
       • If you tag a user using '@', your post will post to their Node in
       addition to yours. For example: "Hey @bob, I want to introduce you to
@@ -12,7 +12,7 @@
       • Other users will not see the posts of who you follow when they visit
       your node, only your posts and posts you are tagged in.
     </p>
-    <h1 class="timeline-header" v-else>
+    <h1 class="node-headline" v-else>
       Hi {{ currentUser }}! Welcome to your Node.
     </h1>
     <br />
@@ -25,8 +25,8 @@
       label="Type your post here"
     ></v-textarea>
 
-    <span class="timeline-header">
-      <v-btn v-on:click="post" class="mx-2" type="submit"> post </v-btn>
+    <span class="node-headline">
+      <v-btn @click="post" class="mx-2" type="submit"> post </v-btn>
       <v-btn @click="clear" class="mx-2"> clear </v-btn>
     </span>
 
@@ -92,13 +92,14 @@
 import socialService from "../services/SocialService";
 
 export default {
-  name: "yourFeed",
   data: () => ({
     newPost: {
       username: "",
       content: "",
     },
+
     currentUser: "",
+
     posts: [],
     liked: [],
     allUsers: [],
@@ -114,12 +115,7 @@ export default {
           .then((response) => {
             if (response.status == 200) {
               this.posts = response.data;
-
-              for (var i = 0; i < this.posts.length; i++) {
-                if (this.posts[i].likes.includes(this.currentUser)) {
-                  this.liked.push(this.posts[i].id);
-                }
-              }
+              this.addPostIdsToLikedArrayIfCurrentUserLikesThem(this.posts);
             } else {
               console.error(response + " errors");
             }
@@ -130,59 +126,36 @@ export default {
       }
     },
 
-    findPhoto(username) {
-      this.allUsers = this.$store.state.allUsers;
-
-      for (var i = 0; i < this.allUsers.length; i++) {
-        if (this.allUsers[i].username == username) {
-          return this.allUsers[i].profilePic;
+    addPostIdsToLikedArrayIfCurrentUserLikesThem(posts) {
+      for (var i = 0; i < posts.length; i++) {
+        if (
+          posts[i].likes != null &&
+          posts[i].likes.includes(this.currentUser)
+        ) {
+          this.liked.push(posts[i].id);
         }
       }
     },
 
-    updatePosts() {
-      socialService.updateRelevantPosts(this.posts);
+    findPhoto(username) {
+      for (var i = 0; i < this.$store.state.allUsers.length; i++) {
+        if (this.$store.state.allUsers[i].username === username) {
+          return this.$store.state.allUsers[i].profilePic;
+        }
+      }
     },
 
     likeClick(post) {
-      if (this.liked.includes(post.id)) {
-        let currentUserInLikesWithTwoCommas = ", " + this.currentUser + ", ";
-        let currentUserInLikesWithCommaBefore = ", " + this.currentUser;
-        let currentUserInLikesWithCommaAfter = this.currentUser + ", ";
-        let commaSpace = ", ";
+      this.$store.commit("STORE_LIKED_ARRAY", this.liked);
+      this.$store.commit(
+        "EDIT_AND_STORE_LIKES_STRING_IN_POST_AND_EDIT_STORED_LIKED_ARRAY",
+        post
+      );
 
-        if (post.likes.includes(currentUserInLikesWithTwoCommas)) {
-          post.likes = post.likes.replace(
-            currentUserInLikesWithTwoCommas,
-            commaSpace
-          );
-        } else if (post.likes.includes(currentUserInLikesWithCommaBefore)) {
-          post.likes = post.likes.replace(
-            currentUserInLikesWithCommaBefore,
-            ""
-          );
-        } else if (post.likes.includes(currentUserInLikesWithCommaAfter)) {
-          post.likes = post.likes.replace(currentUserInLikesWithCommaAfter, "");
-        } else {
-          post.likes = post.likes.replace(this.currentUser, "");
-        }
+      this.liked = this.$store.state.liked;
+      this.post = this.$store.state.post;
 
-        for (var i = 0; i < this.liked.length; i++) {
-          if (this.liked[i] === post.id) {
-            this.liked.splice(i, 1);
-          }
-        }
-      } else {
-        this.liked.push(post.id);
-
-        if (this.currentUser != "" && post.likes != null && post.likes != "") {
-          post.likes = post.likes + ", " + this.currentUser;
-        } else {
-          post.likes = this.currentUser;
-        }
-      }
-
-      this.updatePosts();
+      socialService.updateRelevantPosts(this.posts);
       this.$store.commit("STORE_POSTS_IN_CASE_OF_LOGOUT", this.posts);
     },
 
@@ -215,7 +188,6 @@ export default {
 
   mounted() {
     this.currentUser = this.$store.state.loggedInUsername;
-
     this.getYourRelevantPosts();
   },
 };

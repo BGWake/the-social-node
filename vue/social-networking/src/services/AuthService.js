@@ -13,5 +13,5 @@ export default {
   logout(username) {
     return axios.post('http://localhost:8080/logoutUser', username);
   },
-
+  
 }

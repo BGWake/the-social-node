@@ -1,18 +1,18 @@
 <template>
   <v-container>
     <br />
-    <h1 class="timeline-header" v-if="posts == ''">
-      {{ userFeed }} hasn't made their first post yet, but you can tag them!
+    <h1 class="node-headline" v-if="posts == ''">
+      {{ userNode }} hasn't made their first post yet, but you can tag them!
     </h1>
-    <h1 class="timeline-header" v-else>{{ userFeed }}'s Node</h1>
-    <span class="timeline-header" v-show="$store.state.loggedInUsername != ''">
+    <h1 class="node-headline" v-else>{{ userNode }}'s Node</h1>
+    <span class="node-headline" v-show="$store.state.loggedInUsername != ''">
       <v-btn
         v-on:click="follow"
         class="ma-4"
         type="submit"
         v-show="!alreadyFollowing"
       >
-        follow {{ userFeed }}
+        follow {{ userNode }}
       </v-btn>
     </span>
 
@@ -78,16 +78,19 @@
 import socialService from "../services/SocialService";
 
 export default {
-  name: "feed",
   data: () => ({
-    userFeed: "",
-    posts: [],
     user: {
       username: "",
       following: "",
     },
-    currentUser: "",
+
     alreadyFollowing: false,
+
+    userNode: "",
+    currentUser: "",
+    currentUsersFollowing: "",
+
+    posts: [],
     liked: [],
     allUsers: [],
   }),
@@ -103,20 +106,15 @@ export default {
   methods: {
     renderComponent() {
       this.currentUser = this.$store.state.loggedInUsername;
-      this.userFeed = this.$store.state.storeUsername;
+      this.userNode = this.$store.state.storeUsername;
 
       if (this.currentUser != "") {
         socialService
           .getFollowing(this.currentUser)
           .then((response) => {
             if (response.status == 200) {
-              var yourFollowing = response.data;
-
-              if (yourFollowing.includes(this.userFeed + ",")) {
-                this.alreadyFollowing = true;
-              } else {
-                this.alreadyFollowing = false;
-              }
+              this.currentUsersFollowing = response.data;
+              this.checkIfAlreadyFollowing(this.currentUsersFollowing);
             } else {
               console.error(response + " errors");
             }
@@ -127,14 +125,14 @@ export default {
       }
 
       socialService
-        .getPostsByUsername(this.userFeed)
-        .then((requestData) => {
-          this.posts = requestData.data;
-
-          for (var i = 0; i < this.posts.length; i++) {
-            if (this.posts[i].likes.includes(this.currentUser)) {
-              this.liked.push(this.posts[i].id);
-            }
+        .getPostsByUsername(this.userNode)
+        .then((response) => {
+          this.posts = response.data;
+          if (response.status == 200) {
+            this.posts = response.data;
+            this.addPostIdsToLikedArrayIfCurrentUserLikesThem(this.posts);
+          } else {
+            console.error(response + " errors");
           }
         })
         .catch((err) => {
@@ -142,65 +140,48 @@ export default {
         });
     },
 
-    findPhoto(username) {
-      this.allUsers = this.$store.state.allUsers;
+    checkIfAlreadyFollowing(currentUsersFollowing) {
+      if (currentUsersFollowing.includes(this.userNode + ",")) {
+        this.alreadyFollowing = true;
+      }
+    },
 
-      for (var i = 0; i < this.allUsers.length; i++) {
-        if (this.allUsers[i].username == username) {
-          return this.allUsers[i].profilePic;
+    addPostIdsToLikedArrayIfCurrentUserLikesThem(posts) {
+      for (var i = 0; i < posts.length; i++) {
+        if (
+          posts[i].likes != null &&
+          posts[i].likes.includes(this.currentUser)
+        ) {
+          this.liked.push(posts[i].id);
         }
       }
     },
 
-    updatePosts() {
-      socialService.updateRelevantPosts(this.posts);
+    findPhoto(username) {
+      for (var i = 0; i < this.$store.state.allUsers.length; i++) {
+        if (this.$store.state.allUsers[i].username === username) {
+          return this.$store.state.allUsers[i].profilePic;
+        }
+      }
     },
 
     likeClick(post) {
-      if (this.liked.includes(post.id)) {
-        let currentUserInLikesWithTwoCommas = ", " + this.currentUser + ", ";
-        let currentUserInLikesWithCommaBefore = ", " + this.currentUser;
-        let currentUserInLikesWithCommaAfter = this.currentUser + ", ";
-        let commaSpace = ", ";
+      this.$store.commit("STORE_LIKED_ARRAY", this.liked);
+      this.$store.commit(
+        "EDIT_AND_STORE_LIKES_STRING_IN_POST_AND_EDIT_STORED_LIKED_ARRAY",
+        post
+      );
 
-        if (post.likes.includes(currentUserInLikesWithTwoCommas)) {
-          post.likes = post.likes.replace(
-            currentUserInLikesWithTwoCommas,
-            commaSpace
-          );
-        } else if (post.likes.includes(currentUserInLikesWithCommaBefore)) {
-          post.likes = post.likes.replace(
-            currentUserInLikesWithCommaBefore,
-            ""
-          );
-        } else if (post.likes.includes(currentUserInLikesWithCommaAfter)) {
-          post.likes = post.likes.replace(currentUserInLikesWithCommaAfter, "");
-        } else {
-          post.likes = post.likes.replace(this.currentUser, "");
-        }
+      this.liked = this.$store.state.liked;
+      this.post = this.$store.state.post;
 
-        for (var i = 0; i < this.liked.length; i++) {
-          if (this.liked[i] === post.id) {
-            this.liked.splice(i, 1);
-          }
-        }
-      } else {
-        this.liked.push(post.id);
-
-        if (this.currentUser != "" && post.likes != null && post.likes != "") {
-          post.likes = post.likes + ", " + this.currentUser;
-        } else {
-          post.likes = this.currentUser;
-        }
-      }
-
-      this.updatePosts();
+      socialService.updateRelevantPosts(this.posts);
       this.$store.commit("STORE_POSTS_IN_CASE_OF_LOGOUT", this.posts);
     },
 
     follow() {
       this.user.username = this.$store.state.loggedInUsername;
-      this.user.following = this.userFeed;
+      this.user.following = this.userNode;
 
       socialService
         .follow(this.user)
@@ -224,19 +205,4 @@ export default {
 </script>
 
 <style>
-.timeline-header {
-  display: flex;
-  justify-content: center;
-  font-family: monospace;
-}
-
-#cards {
-  transition: 1.3s;
-  background-color: rgba(46, 110, 248, 0.205);
-}
-
-#cards:hover {
-  transition: 1.3s;
-  background-color: rgba(46, 110, 248, 0.41);
-}
 </style>

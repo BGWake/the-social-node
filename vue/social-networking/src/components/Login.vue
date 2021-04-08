@@ -45,7 +45,7 @@
           <br />
           <br />
           <div id="login" class="text-center">
-            <v-btn v-on:click="login" class="mr-4" :disabled="invalid">
+            <v-btn @click="login" class="mr-4" :disabled="invalid">
               submit
             </v-btn>
             <v-btn @click="clear"> clear </v-btn>
@@ -53,7 +53,7 @@
         </v-form>
       </v-card>
     </validation-observer>
-    <div class="timeline-header" v-show="isPasswordIncorrect">
+    <div class="node-headline" v-show="isPasswordIncorrect">
       {{ isPasswordIncorrectMsg }}
     </div>
   </v-container>
@@ -88,7 +88,6 @@ extend("min", {
 });
 
 export default {
-  name: "login",
   components: {
     ValidationProvider,
     ValidationObserver,
@@ -99,7 +98,7 @@ export default {
       username: "",
       password: "",
     },
-    posts: [],
+
     isPasswordIncorrect: false,
     isPasswordIncorrectMsg:
       "Incorrect password or account does not exist. You can register with the 'Need an account?' link.",
