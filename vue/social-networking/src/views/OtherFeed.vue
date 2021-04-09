@@ -143,6 +143,8 @@ export default {
     checkIfAlreadyFollowing(currentUsersFollowing) {
       if (currentUsersFollowing.includes(this.userNode + ",")) {
         this.alreadyFollowing = true;
+      } else {
+        this.alreadyFollowing = false;
       }
     },
 
