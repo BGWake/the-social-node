@@ -32,7 +32,7 @@ public class Populator implements CommandLineRunner {
         User user3 = new User("anne", "password", "", "https://www.nicepng.com/png/full/115-1150821_default-avatar-comments-sign-in-icon-png.png");
         User user4 = new User("jim", "password", "", "https://www.nicepng.com/png/full/115-1150821_default-avatar-comments-sign-in-icon-png.png");
         User user5 = new User("dog", "password", "", "https://images.pexels.com/photos/1078090/pexels-photo-1078090.jpeg");
-        User user6 = new User("Brandon", "password", "", "https://www.nicepng.com/png/full/115-1150821_default-avatar-comments-sign-in-icon-png.png");
+        User user6 = new User("Brandon", "totallytopsecret4", "", "https://www.nicepng.com/png/full/115-1150821_default-avatar-comments-sign-in-icon-png.png");
 
         String encodedPassword = bCryptPasswordEncoder.encode(user.getPassword());
         user.setPassword(encodedPassword);
