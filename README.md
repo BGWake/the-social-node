@@ -1,7 +1,7 @@
 # The Social Node
 
 ### The most recent version of this app can be found at:
-##https://the-social-node.herokuapp.com/
+## https://the-social-node.herokuapp.com/
 
 ### Installation Directions
 - Import the build.gradle in your IDE
