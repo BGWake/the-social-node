@@ -29,12 +29,13 @@ public class PostService {
 
         List<Post> yourRelevantPosts = new ArrayList<>(postRepository.findPostsByUsername(username));
 
-        return findTagsInPostsAndAddToRelevantPosts(yourRelevantPosts, username);
+        return findTagsInPostsAndSharedPostsThenAddToRelevantPosts(yourRelevantPosts, username);
     }
 
     public void create(Post post) {
-
-        post.setTime(LocalDateTime.now());
+        if (post.getTime().equals("")) {
+            post.setTime(LocalDateTime.now().minusHours(4));
+        }
         postRepository.save(post);
     }
 
@@ -59,10 +60,10 @@ public class PostService {
             yourRelevantPosts.addAll(followedUserPosts);
         }
 
-        return findTagsInPostsAndAddToRelevantPosts(yourRelevantPosts, username);
+        return findTagsInPostsAndSharedPostsThenAddToRelevantPosts(yourRelevantPosts, username);
     }
 
-    public List<Post> findTagsInPostsAndAddToRelevantPosts(List<Post> yourRelevantPosts, String username) {
+    private List<Post> findTagsInPostsAndSharedPostsThenAddToRelevantPosts(List<Post> yourRelevantPosts, String username) {
         List<Post> allPosts = postRepository.findAll();
 
         for (Post post : allPosts) {
@@ -70,7 +71,8 @@ public class PostService {
             if ((post.getContent().contains("@" + username + " ") || post.getContent().contains("@" + username + ".") ||
                     post.getContent().contains("@" + username + "!") ||
                     post.getContent().contains("@" + username + "?") ||
-                    post.getContent().contains("@" + username + ",")) && !yourRelevantPosts.contains(post)) {
+                    post.getContent().contains("@" + username + ",")) || post.getShared().contains(username + ",")
+                    && !yourRelevantPosts.contains(post)) {
 
                 yourRelevantPosts.add(post);
             }

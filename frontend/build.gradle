@@ -1,0 +1,46 @@
+apply plugin: 'idea'
+apply plugin: 'com.moowork.node'
+
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        jcenter()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+
+    dependencies {
+        classpath "com.moowork.gradle:gradle-node-plugin:1.1.1"
+    }
+}
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+node {
+    version = '14.16.1'
+    npmVersion = '7.9.0'
+    download = true
+    workDir = file("${project.buildDir}/node")
+    nodeModulesDir = file("${project.projectDir}")
+}
+
+task build(type: NpmTask) {
+    args = ['run', 'build']
+}
+build.dependsOn(npm_install)
+
+task clean(type: Delete){
+    delete "dist"
+}
+
+task cleanAll(type: Delete){
+    delete "build"
+    delete "node_modules"
+    delete ".gradle"
+}
+cleanAll.dependsOn(clean)

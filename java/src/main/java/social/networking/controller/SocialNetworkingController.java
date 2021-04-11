@@ -45,7 +45,7 @@ public class SocialNetworkingController {
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/feed/posts/{username}")
+    @GetMapping("/posts/{username}")
     public List<Post> getAllRelevantPostsForYourFeed(@PathVariable String username) {
         return postService.getAllRelevantToYourFeed(username);
     }
@@ -69,8 +69,14 @@ public class SocialNetworkingController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/follow")
-    public void addToFollowing(@RequestBody User user) {
+    public void addUserToFollowing(@RequestBody User user) {
         userService.addToFollowing(user);
+    }
+
+    @ResponseStatus(HttpStatus.CREATED)
+    @PutMapping("/unfollow")
+    public void removeUserFromFollowing(@RequestBody User user) {
+        userService.removeFromFollowing(user);
     }
 
     @ResponseStatus(HttpStatus.OK)

@@ -122,6 +122,19 @@ public class UserService {
         }
     }
 
+    public void removeFromFollowing(User user) {
+        List<User> users = userRepository.findAll();
+
+        for (User other : users) {
+
+            if (other.getUsername().equals(user.getUsername())
+                    && other.getFollowing().contains(user.getFollowing() + ",")) {
+                    other.setFollowing(other.getFollowing().replaceAll((user.getFollowing() + ","), ""));
+            }
+            userRepository.save(other);
+        }
+    }
+
     public String getFollowing(String username) {
         return userRepository.findFollowingByUsername(username).getFollowing();
     }

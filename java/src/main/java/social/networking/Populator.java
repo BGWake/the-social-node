@@ -32,6 +32,7 @@ public class Populator implements CommandLineRunner {
         User user3 = new User("anne", "password", "", "https://www.nicepng.com/png/full/115-1150821_default-avatar-comments-sign-in-icon-png.png");
         User user4 = new User("jim", "password", "", "https://www.nicepng.com/png/full/115-1150821_default-avatar-comments-sign-in-icon-png.png");
         User user5 = new User("dog", "password", "", "https://images.pexels.com/photos/1078090/pexels-photo-1078090.jpeg");
+        User user6 = new User("Brandon", "password", "", "https://www.nicepng.com/png/full/115-1150821_default-avatar-comments-sign-in-icon-png.png");
 
         String encodedPassword = bCryptPasswordEncoder.encode(user.getPassword());
         user.setPassword(encodedPassword);
@@ -43,42 +44,49 @@ public class Populator implements CommandLineRunner {
         user4.setPassword(encodedPassword4);
         String encodedPassword5 = bCryptPasswordEncoder.encode(user5.getPassword());
         user5.setPassword(encodedPassword5);
+        String encodedPassword6 = bCryptPasswordEncoder.encode(user6.getPassword());
+        user6.setPassword(encodedPassword6);
 
         userRepository.save(user);
         userRepository.save(user2);
         userRepository.save(user3);
         userRepository.save(user4);
         userRepository.save(user5);
+        userRepository.save(user6);
 
-        Post post = new Post("bob", "Had a good day.", "tom");
-        Post post2 = new Post("bob", "Walked the dog today!", "anne, dog");
-        Post post3 = new Post("tom", "I wonder if it'll rain?", "bob, jim");
-        Post post4 = new Post("tom", "It's raining!", "anne");
-        Post post5 = new Post("anne", "Rode my bike on my favorite trail today.", "bob");
-        Post post6 = new Post("anne", "Tag me if you know of any good ones in the area!", "jim");
-        Post post7 = new Post("jim", "Hey @anne, there's a great trail 15 miles west of town.", "anne");
-        Post post8 = new Post("jim", "It's my birthday!", "bob");
-        Post post9 = new Post("jim", "Come over at 7 for the party.", "bob, tom");
-        Post post10 = new Post("dog", "woof", "bob");
+        Post post = new Post("bob", "Had a good day.", "tom", "");
+        Post post2 = new Post("bob", "Walked the dog today!", "anne, dog", "");
+        Post post3 = new Post("tom", "I wonder if it'll rain?", "bob, jim", "");
+        Post post4 = new Post("tom", "It's raining!", "anne", "");
+        Post post5 = new Post("anne", "Rode my bike on my favorite trail today.", "bob", "");
+        Post post6 = new Post("anne", "Tag me if you know of any good ones in the area!", "jim", "");
+        Post post7 = new Post("jim", "Hey @anne, there's a great trail 15 miles west of town.", "anne", "");
+        Post post8 = new Post("jim", "It's my birthday!", "tom", "");
+        Post post9 = new Post("jim", "Come over at 7 for the party.", "tom", "");
+        Post post10 = new Post("dog", "woof", "bob", "");
+        Post post11 = new Post("Brandon", "Thanks for visiting my site! More features to come.", "", "");
 
+        post.setTime(LocalDateTime.now().minusHours(4));
         postRepository.save(post);
-        post2.setTime(LocalDateTime.now().plusSeconds(1));
+        post2.setTime(LocalDateTime.now().plusSeconds(1).minusHours(4));
         postRepository.save(post2);
-        post3.setTime(LocalDateTime.now().plusSeconds(2));
+        post3.setTime(LocalDateTime.now().plusSeconds(2).minusHours(4));
         postRepository.save(post3);
-        post4.setTime(LocalDateTime.now().plusSeconds(3));
+        post4.setTime(LocalDateTime.now().plusSeconds(3).minusHours(4));
         postRepository.save(post4);
-        post5.setTime(LocalDateTime.now().plusSeconds(4));
+        post5.setTime(LocalDateTime.now().plusSeconds(4).minusHours(4));
         postRepository.save(post5);
-        post6.setTime(LocalDateTime.now().plusSeconds(5));
+        post6.setTime(LocalDateTime.now().plusSeconds(5).minusHours(4));
         postRepository.save(post6);
-        post7.setTime(LocalDateTime.now().plusSeconds(6));
+        post7.setTime(LocalDateTime.now().plusSeconds(6).minusHours(4));
         postRepository.save(post7);
-        post8.setTime(LocalDateTime.now().plusSeconds(7));
+        post8.setTime(LocalDateTime.now().plusSeconds(7).minusHours(4));
         postRepository.save(post8);
-        post9.setTime(LocalDateTime.now().plusSeconds(8));
+        post9.setTime(LocalDateTime.now().plusSeconds(8).minusHours(4));
         postRepository.save(post9);
-        post10.setTime(LocalDateTime.now().plusSeconds(9));
+        post10.setTime(LocalDateTime.now().plusSeconds(9).minusHours(4));
         postRepository.save(post10);
+        post11.setTime(LocalDateTime.now().plusSeconds(10).minusHours(4));
+        postRepository.save(post11);
     }
 }

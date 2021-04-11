@@ -18,12 +18,14 @@ public class Post {
     private String content;
     private String time;
     private String likes;
+    private String shared;
 
-    public Post(String username, String content, String likes) {
+    public Post(String username, String content, String likes, String shared) {
         this.username = username;
         this.content = content;
         this.time = LocalDateTime.now().toString();
         this.likes = likes;
+        this.shared = shared;
     }
 
     public Post() {
@@ -67,6 +69,14 @@ public class Post {
 
     public void setLikes(String likes) {
         this.likes = likes;
+    }
+
+    public String getShared() {
+        return shared;
+    }
+
+    public void setShared(String shared) {
+        this.shared = shared;
     }
 
     @Override
