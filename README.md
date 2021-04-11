@@ -15,6 +15,6 @@ A full-stack mobile responsive web application, The Social Node is a social medi
 ### Notes
 - Logging in is required for most functionality, and it is encouraged to register your own account
 - Existing users are `bob`, `tom`, `anne`, `jim`, `dog`, and `Brandon` all with the password `password`
-- Register, login, post, follow, unfollow, like, unlike, @-tagging, and share post are all existing functions
+- Register, login, logut, post, follow, unfollow, like, unlike, @-tagging, and share post are all existing functions
 - If you wish to view the local database, go to `http://localhost:8080/h2-console`
   - Default credentials: Username: `sa` with an empty password

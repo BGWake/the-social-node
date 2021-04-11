@@ -124,6 +124,7 @@ export default {
     newPost: {
       username: "",
       content: "",
+      shared: "",
     },
 
     currentUser: "",

@@ -33,9 +33,9 @@ public class PostService {
     }
 
     public void create(Post post) {
-        if (post.getTime().equals("")) {
-            post.setTime(LocalDateTime.now().minusHours(4));
-        }
+
+        post.setTime(LocalDateTime.now().minusHours(4));
+
         postRepository.save(post);
     }
 
@@ -71,7 +71,7 @@ public class PostService {
             if ((post.getContent().contains("@" + username + " ") || post.getContent().contains("@" + username + ".") ||
                     post.getContent().contains("@" + username + "!") ||
                     post.getContent().contains("@" + username + "?") ||
-                    post.getContent().contains("@" + username + ",")) || post.getShared().contains(username + ",")
+                    post.getContent().contains("@" + username + ","))
                     && !yourRelevantPosts.contains(post)) {
 
                 yourRelevantPosts.add(post);
@@ -79,9 +79,12 @@ public class PostService {
             if (post.getContent().endsWith("@" + username) &&
                     !yourRelevantPosts.contains(post)) {
 
-                    yourRelevantPosts.add(post);
-                }
+                yourRelevantPosts.add(post);
             }
+            if (!post.getShared().equals("") && post.getShared().contains(username + ",") && !yourRelevantPosts.contains(post)) {
+                yourRelevantPosts.add(post);
+            }
+        }
         yourRelevantPosts.sort(Comparator.comparing(Post::getTime));
 
         return yourRelevantPosts;

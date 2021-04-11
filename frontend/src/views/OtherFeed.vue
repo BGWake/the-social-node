@@ -294,8 +294,7 @@ export default {
       } else {
         post.shared = post.shared + (this.currentUser + ",");
       }
-      socialService
-        .createPost(post)
+      socialService.updateRelevantPosts(this.posts)
         .then((response) => {
           if (response.status == 201) {
             this.renderComponent();
