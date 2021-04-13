@@ -1,9 +1,9 @@
 import Vue from 'vue'
-import Home from '../views/Home.vue'
-import Login from '../components/Login.vue'
-import YourFeed from '../views/YourFeed.vue'
-import OtherFeed from '../views/OtherFeed.vue'
-import Register from '../components/Register.vue'
+import HomePage from '../views/HomePage.vue'
+import LogIn from '../components/LogIn.vue'
+import YourNode from '../views/YourNode.vue'
+import OtherNode from '../views/OtherNode.vue'
+import RegisterAccount from '../components/RegisterAccount.vue'
 import Router from 'vue-router'
 
 Vue.use(Router)
@@ -13,38 +13,29 @@ const router = new Router({
   base: process.env.BASE_URL,
   routes: [
     {
-      path: '/',
-      name: 'home',
-      component: Home,
-      meta: {
-        requiresAuth: false
-      }
+      path: "/",
+      name: "HomePage",
+      component: HomePage,
     },
     {
       path: "/login",
-      name: "login",
-      component: Login,
-      meta: {
-        requiresAuth: false
-      }
+      name: "LogIn",
+      component: LogIn,
     },
     {
       path: "/register",
-      name: "register",
-      component: Register,
-      meta: {
-        requiresAuth: false
-      }
+      name: "RegisterAccount",
+      component: RegisterAccount,
     },
     {
-      path: "/your-feed",
-      name: "your-feed",
-      component: YourFeed,
+      path: "/node/current-user",
+      name: "YourNode",
+      component: YourNode,
     },
     {
-      path: "/feed/:name",
-      name: "feed",
-      component: OtherFeed,
+      path: "/node/:name",
+      name: "OtherNode",
+      component: OtherNode,
     },
   ]
 })

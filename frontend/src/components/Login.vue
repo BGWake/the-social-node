@@ -4,7 +4,8 @@
       <v-card
         outlined
         elevation="6"
-        style="background-color: rgba(46, 110, 248, 0.205); margin: 30px width: 50%; max-width: 700px"
+        style="margin: 30px width: 50%; max-width: 700px"
+        id="cards"
         class="mx-auto pa-4"
       >
         <h2>Login</h2>
@@ -41,7 +42,9 @@
               append-icon="mdi-eye-off"
             ></v-text-field>
           </validation-provider>
-          <router-link :to="{ name: 'register' }">New user? Register here.</router-link>
+          <router-link :to="{ name: 'RegisterAccount' }"
+            >New user? Register here.</router-link
+          >
           <br />
           <br />
           <span class="node-headline">
@@ -60,7 +63,7 @@
 </template>
 
 <script>
-import authService from "../services/AuthService";
+import AuthService from "../services/AuthService";
 
 import { required, max, min } from "vee-validate/dist/rules";
 import {
@@ -88,6 +91,8 @@ extend("min", {
 });
 
 export default {
+  name: "LogIn",
+
   components: {
     ValidationProvider,
     ValidationObserver,
@@ -106,12 +111,11 @@ export default {
 
   methods: {
     login() {
-      authService
-        .login(this.user)
+      AuthService.login(this.user)
         .then((response) => {
           if (response.status == 201) {
             this.$store.commit("SET_LOGGED_IN_USER", this.user);
-            this.$router.push("/your-feed");
+            this.$router.push("/node/current-user");
           }
         })
         .catch((err) => {

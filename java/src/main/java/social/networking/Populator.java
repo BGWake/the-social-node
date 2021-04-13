@@ -32,7 +32,7 @@ public class Populator implements CommandLineRunner {
         User user3 = new User("anne", "password", "", "https://www.nicepng.com/png/full/115-1150821_default-avatar-comments-sign-in-icon-png.png");
         User user4 = new User("jim", "password", "", "https://www.nicepng.com/png/full/115-1150821_default-avatar-comments-sign-in-icon-png.png");
         User user5 = new User("dog", "password", "", "https://images.pexels.com/photos/1078090/pexels-photo-1078090.jpeg");
-        User user6 = new User("Brandon", "totallytopsecret4", "", "https://www.nicepng.com/png/full/115-1150821_default-avatar-comments-sign-in-icon-png.png");
+        User user6 = new User("Brandon", "password", "", "https://www.nicepng.com/png/full/115-1150821_default-avatar-comments-sign-in-icon-png.png");
 
         String encodedPassword = bCryptPasswordEncoder.encode(user.getPassword());
         user.setPassword(encodedPassword);
@@ -64,7 +64,7 @@ public class Populator implements CommandLineRunner {
         Post post8 = new Post("jim", "It's my birthday!", "tom", "");
         Post post9 = new Post("jim", "Come over at 7 for the party.", "tom", "");
         Post post10 = new Post("dog", "woof", "bob", "");
-        Post post11 = new Post("Brandon", "Thanks for visiting my site! More features to come.", "", "");
+        Post post11 = new Post("Brandon", "Thanks for visiting my app! More features to come.", "", "");
 
         post.setTime(LocalDateTime.now().minusHours(4));
         postRepository.save(post);

@@ -26,7 +26,7 @@
     ></v-textarea>
 
     <span class="node-headline">
-      <v-btn @click="post" class="mx-2" type="submit"> post </v-btn>
+      <v-btn @click="createPost" class="mx-2"> post </v-btn>
       <v-btn @click="clear" class="mx-2"> clear </v-btn>
     </span>
 
@@ -44,9 +44,9 @@
         <v-card-title class="headline font-weight-bold">
           <router-link
             id="quicklink"
-            :to="'/feed/' + post.username"
+            :to="'/node/' + post.username"
             v-if="post.username != currentUser"
-            ><span v-on:click="storeUser(post.username)">
+            ><span @click="storeUser(post.username)">
               {{ post.username }}
             </span>
           </router-link>
@@ -56,32 +56,34 @@
         </v-card-title>
         <router-link
           id="quicklink"
-          :to="'/feed/' + post.username"
+          :to="'/node/' + post.username"
           v-if="post.username != currentUser"
         >
           <v-img
-            class="mt-5 mr-5 rounded-xl"
+            class="mt-5 mr-5"
+            style="border-radius: 50%"
             :lazy-src="findPhoto(post.username)"
             alt=""
-            max-height="50"
-            max-width="50"
+            max-height="75"
+            max-width="75"
             :src="findPhoto(post.username)"
-            v-on:click="storeUser(post.username)"
+            @click="storeUser(post.username)"
         /></router-link>
         <v-img
-          class="mt-5 mr-5 rounded-xl"
+          class="mt-5 mr-5"
+          style="border-radius: 50%"
           :lazy-src="findPhoto(post.username)"
           alt=""
           v-else
-          max-height="50"
-          max-width="50"
+          max-height="75"
+          max-width="75"
           :src="findPhoto(post.username)"
         />
       </div>
-      <v-card-subtitle class="mt-n9"
+      <v-card-subtitle class="mt-n11"
         >posted on
         {{ post.time.substring(5, 10) + "-" + post.time.substring(2, 4) }}
-        <br />at
+        at
         {{ post.time.substring(11, 19) }}
         EST</v-card-subtitle
       >
@@ -92,9 +94,7 @@
           $store.state.loggedInUsername != '' && liked.indexOf(post.id) != -1
         "
       >
-        <v-icon color="red" type="submit" @click="likeClick(post)"
-          >mdi-heart
-        </v-icon>
+        <v-icon color="red" @click="likeClick(post)">mdi-heart </v-icon>
         <span v-show="post.likes != '' && post.likes != null">
           Liked by {{ post.likes }}</span
         >
@@ -104,7 +104,6 @@
         <v-icon
           v-show="$store.state.loggedInUsername != ''"
           class="heart"
-          type="submit"
           @click="likeClick(post)"
           >mdi-heart
         </v-icon>
@@ -117,9 +116,11 @@
 </template>
 
 <script>
-import socialService from "../services/SocialService";
+import SocialService from "../services/SocialService";
 
 export default {
+  name: "YourNode",
+
   data: () => ({
     newPost: {
       username: "",
@@ -134,13 +135,17 @@ export default {
     allUsers: [],
   }),
 
+  mounted() {
+    this.currentUser = this.$store.state.loggedInUsername;
+    this.getYourRelevantPosts();
+  },
+
   methods: {
     getYourRelevantPosts() {
       if (this.$store.state.loggedInUsername == "") {
         this.$router.push("/");
       } else {
-        socialService
-          .getRelevantPosts(this.currentUser)
+        SocialService.getRelevantPosts(this.currentUser)
           .then((response) => {
             if (response.status == 200) {
               this.posts = response.data;
@@ -187,22 +192,21 @@ export default {
       this.liked = this.$store.state.liked;
       this.post = this.$store.state.post;
 
-      socialService.updateRelevantPosts(this.posts);
+      SocialService.updateRelevantPosts(this.posts);
       this.$store.commit("STORE_POSTS_IN_CASE_OF_LOGOUT", this.posts);
     },
 
-    post() {
+    createPost() {
       this.newPost.username = this.currentUser;
 
-      socialService
-        .createPost(this.newPost)
+      SocialService.createPost(this.newPost)
         .then((response) => {
           if (response.status == 201) {
-            socialService
-              .getRelevantPosts(this.currentUser)
-              .then((response) => {
+            SocialService.getRelevantPosts(this.currentUser).then(
+              (response) => {
                 this.posts = response.data;
-              });
+              }
+            );
           } else {
             console.error(response + " errors");
           }
@@ -220,11 +224,6 @@ export default {
     storeUser(username) {
       this.$store.commit("STORE_USER", username);
     },
-  },
-
-  mounted() {
-    this.currentUser = this.$store.state.loggedInUsername;
-    this.getYourRelevantPosts();
   },
 };
 </script>

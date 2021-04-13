@@ -10,20 +10,10 @@
       {{ userNode }}.
     </div>
     <span class="node-headline" v-show="$store.state.loggedInUsername != ''">
-      <v-btn
-        v-on:click="follow"
-        class="ma-4"
-        type="submit"
-        v-show="!alreadyFollowing"
-      >
+      <v-btn @click="follow" class="ma-4" v-show="!alreadyFollowing">
         follow {{ userNode }}
       </v-btn>
-      <v-btn
-        v-on:click="unfollow"
-        class="ma-4"
-        type="submit"
-        v-show="alreadyFollowing"
-      >
+      <v-btn @click="unfollow" class="ma-4" v-show="alreadyFollowing">
         unfollow {{ userNode }}
       </v-btn>
     </span>
@@ -42,10 +32,9 @@
         <v-card-title class="headline font-weight-bold">
           <router-link
             id="quicklink"
-            :to="'/feed/' + post.username"
+            :to="'/node/' + post.username"
             v-if="post.username != userNode"
-            v-on:click="storeUser(post.username)"
-            ><span v-on:click="storeUser(post.username)">
+            ><span @click="storeUser(post.username)">
               {{ post.username }}
             </span>
           </router-link>
@@ -55,32 +44,34 @@
         </v-card-title>
         <router-link
           id="quicklink"
-          :to="'/feed/' + post.username"
+          :to="'/node/' + post.username"
           v-if="post.username != userNode"
         >
           <v-img
-            class="mt-5 mr-5 rounded-xl"
+            class="mt-5 mr-5"
+            style="border-radius: 50%"
             :lazy-src="findPhoto(post.username)"
             alt=""
-            max-height="50"
-            max-width="50"
+            max-height="75"
+            max-width="75"
             :src="findPhoto(post.username)"
             v-on:click="storeUser(post.username)"
         /></router-link>
         <v-img
-          class="mt-5 mr-5 rounded-xl"
+          class="mt-5 mr-5"
+          style="border-radius: 50%"
           :lazy-src="findPhoto(post.username)"
           alt=""
           v-else
-          max-height="50"
-          max-width="50"
+          max-height="75"
+          max-width="75"
           :src="findPhoto(post.username)"
         />
       </div>
-      <v-card-subtitle class="mt-n9"
+      <v-card-subtitle class="mt-n11"
         >posted on
         {{ post.time.substring(5, 10) + "-" + post.time.substring(2, 4) }}
-        <br />at
+        at
         {{ post.time.substring(11, 19) }}
         EST</v-card-subtitle
       >
@@ -88,14 +79,11 @@
       <v-card-text class="headline">"{{ post.content }}"</v-card-text>
       <span class="d-flex justify-space-between">
         <v-card-subtitle
-          class="d-flex"
           v-if="
             $store.state.loggedInUsername != '' && liked.indexOf(post.id) != -1
           "
         >
-          <v-icon color="red" type="submit" @click="likeClick(post)"
-            >mdi-heart
-          </v-icon>
+          <v-icon color="red" @click="likeClick(post)">mdi-heart </v-icon>
           <span v-show="post.likes != '' && post.likes != null">
             Liked by {{ post.likes }}</span
           >
@@ -105,7 +93,6 @@
           <v-icon
             v-show="$store.state.loggedInUsername != ''"
             class="heart"
-            type="submit"
             @click="likeClick(post)"
             >mdi-heart
           </v-icon>
@@ -119,16 +106,16 @@
             currentUser != '' &&
             post.username != currentUser
           "
-          v-on:click="share(post)"
+          @click="share(post)"
           v-show="currentUser != ''"
-          class="d-flex mt-2"
+          class="d-flex mt-2 mr-1"
           icon-color="none"
           text
           >Share</v-btn
         >
         <span
           v-else-if="currentUser != '' && post.username != currentUser"
-          class="d-flex align-baseline mr-4"
+          class="d-flex align-baseline mr-5"
           ><v-icon color="green"> mdi-check </v-icon>
           <p class="mt-4">Shared!</p></span
         >
@@ -138,9 +125,11 @@
 </template>
 
 <script>
-import socialService from "../services/SocialService";
+import SocialService from "../services/SocialService";
 
 export default {
+  name: "OtherNode",
+
   data: () => ({
     user: {
       username: "",
@@ -166,14 +155,17 @@ export default {
     },
   },
 
+  mounted() {
+    this.renderComponent();
+  },
+
   methods: {
     renderComponent() {
       this.currentUser = this.$store.state.loggedInUsername;
       this.userNode = this.$store.state.storeUsername;
 
       if (this.currentUser != "") {
-        socialService
-          .getFollowing(this.currentUser)
+        SocialService.getFollowing(this.currentUser)
           .then((response) => {
             if (response.status == 200) {
               this.currentUsersFollowing = response.data;
@@ -187,8 +179,7 @@ export default {
           });
       }
 
-      socialService
-        .getPostsByUsername(this.userNode)
+      SocialService.getPostsByUsername(this.userNode)
         .then((response) => {
           this.posts = response.data;
           if (response.status == 200) {
@@ -224,7 +215,7 @@ export default {
     },
 
     findPhoto(username) {
-      if (username === "Brandon") {
+      if (username == "Brandon") {
         return require("@/assets/brandon-headshot.jpg");
       }
       for (var i = 0; i < this.$store.state.allUsers.length; i++) {
@@ -244,7 +235,7 @@ export default {
       this.liked = this.$store.state.liked;
       this.post = this.$store.state.post;
 
-      socialService.updateRelevantPosts(this.posts);
+      SocialService.updateRelevantPosts(this.posts);
       this.$store.commit("STORE_POSTS_IN_CASE_OF_LOGOUT", this.posts);
     },
 
@@ -252,8 +243,7 @@ export default {
       this.user.username = this.$store.state.loggedInUsername;
       this.user.following = this.userNode;
 
-      socialService
-        .follow(this.user)
+      SocialService.follow(this.user)
         .then((response) => {
           if (response.status == 201) {
             this.alreadyFollowing = true;
@@ -270,8 +260,7 @@ export default {
       this.user.username = this.$store.state.loggedInUsername;
       this.user.following = this.userNode;
 
-      socialService
-        .unfollow(this.user)
+      SocialService.unfollow(this.user)
         .then((response) => {
           if (response.status == 201) {
             this.renderComponent();
@@ -294,7 +283,7 @@ export default {
       } else {
         post.shared = post.shared + (this.currentUser + ",");
       }
-      socialService.updateRelevantPosts(this.posts)
+      SocialService.updateRelevantPosts(this.posts)
         .then((response) => {
           if (response.status == 201) {
             this.renderComponent();
@@ -338,10 +327,6 @@ export default {
     //     this.posts[i].time = this.posts[i].time.replaceAll(this.posts[i].time.substring(11), timeResult);
     //   }
     // },
-  },
-
-  mounted() {
-    this.renderComponent();
   },
 };
 </script>

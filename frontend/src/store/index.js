@@ -5,7 +5,6 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-
     loggedInUsername: "",
     storeUsername: "",
 
@@ -13,14 +12,12 @@ export default new Vuex.Store({
     allUsers: [],
     liked: [],
     post: [],
-    
   },
 
   mutations: {
 
     SET_LOGGED_IN_USER(state, user) {
       state.loggedInUsername = user.username;
-      state.following = user.following;
     },
 
     STORE_USER(state, username) {

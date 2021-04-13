@@ -2,7 +2,7 @@
   <v-app class="grey lighten-4">
     <div id="app">
       <div class="body">
-        <header-section />
+        <header-section></header-section>
         <router-view />
       </div>
     </div>
@@ -10,18 +10,18 @@
 </template>
 
 <script>
-import headerSection from "./components/HeaderSection";
+import HeaderSection from "./components/HeaderSection";
 
 export default {
   components: {
-    headerSection,
+    HeaderSection,
   },
 };
 </script>
 
 <style>
 .body {
-  padding: 60px;
+  margin-top: 50px;
 }
 
 h2 {

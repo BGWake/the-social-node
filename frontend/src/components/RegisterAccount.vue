@@ -5,7 +5,8 @@
       <v-card
         outlined
         elevation="6"
-        style="background-color: rgba(46, 110, 248, 0.205); margin: 30px width: 50%; max-width: 700px"
+        style="margin: 30px width: 50%; max-width: 700px"
+        id="cards"
         class="mx-auto pa-4 mt-5"
       >
         <h2>Register An Account</h2>
@@ -94,7 +95,7 @@
 </template>
 
 <script>
-import authService from "../services/AuthService";
+import AuthService from "../services/AuthService";
 import { required, max, min } from "vee-validate/dist/rules";
 import {
   extend,
@@ -121,6 +122,8 @@ extend("min", {
 });
 
 export default {
+  name: 'RegisterAccount',
+
   components: {
     ValidationProvider,
     ValidationObserver,
@@ -134,8 +137,10 @@ export default {
       following: "",
       profilePic: "",
     },
+
     registrationErrors: false,
     registrationErrorMsg: "Password and Confirm Password do not match.",
+
     userAlreadyExists: false,
     userAlreadyExistsMsg: "Sorry, that username already exists.",
   }),
@@ -145,7 +150,7 @@ export default {
       if (this.user.password != this.user.confirmPassword) {
         this.registrationErrors = true;
       } else {
-        authService
+        AuthService
           .register(this.user)
           .then((response) => {
             if (response.status == 201) {
